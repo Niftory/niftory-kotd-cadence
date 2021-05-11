@@ -7,8 +7,8 @@ pub contract KOTD: NonFungibleToken {
     // -----------------------------------------------------------------------
     pub event ContractInitialized()
     
-    // Emitted when a new Moment struct is created
-    pub event MomentCreated(id: UInt32, metadata: {String:String})
+    // Emitted when a new CollectibleItem struct is created
+    pub event CollectibleItemCreated(id: UInt32, metadata: {String:String})
     // Emitted when a new series has been triggered by an admin
     pub event NewSeriesStarted(newCurrentSeries: UInt32)
 
@@ -16,20 +16,20 @@ pub contract KOTD: NonFungibleToken {
     //
     // Emitted when a new Set is created
     pub event SetCreated(setID: UInt32, series: UInt32)
-    // Emitted when a new Moment is added to a Set
-    pub event MomentAddedToSet(setID: UInt32, momentID: UInt32)
-    // Emitted when a Moment is retired from a Set and cannot be used to mint
-    pub event MomentRetiredFromSet(setID: UInt32, momentID: UInt32, numMoments: UInt32)
-    // Emitted when a Set is locked, meaning Moments cannot be added
+    // Emitted when a new CollectibleItem is added to a Set
+    pub event CollectibleItemAddedToSet(setID: UInt32, collectibleItemID: UInt32)
+    // Emitted when a CollectibleItem is retired from a Set and cannot be used to mint
+    pub event CollectibleItemRetiredFromSet(setID: UInt32, collectibleItemID: UInt32, numCollectibleItems: UInt32)
+    // Emitted when a Set is locked, meaning CollectibleItems cannot be added
     pub event SetLocked(setID: UInt32)
     // Emitted when a Collectible is minted from a Set
-    pub event CollectibleMinted(collectibleID: UInt64, momentID: UInt32, setID: UInt32, serialNumber: UInt32)
+    pub event CollectibleMinted(collectibleID: UInt64, collectibleItemID: UInt32, setID: UInt32, serialNumber: UInt32)
 
     // Events for Collection-related actions
     //
-    // Emitted when a moment is withdrawn from a Collection
+    // Emitted when a collectibleItem is withdrawn from a Collection
     pub event Withdraw(id: UInt64, from: Address?)
-    // Emitted when a moment is deposited into a Collection
+    // Emitted when a collectibleItem is deposited into a Collection
     pub event Deposit(id: UInt64, to: Address?)
 
     // Emitted when a Collectible is destroyed
@@ -45,8 +45,8 @@ pub contract KOTD: NonFungibleToken {
     // Many Sets can exist at a time, but only one series.
     pub var currentSeries: UInt32
 
-    // Variable size dictionary of Moment structs
-    access(self) var momentDatas: {UInt32: Moment}
+    // Variable size dictionary of CollectibleItem structs
+    access(self) var collectibleItemDatas: {UInt32: CollectibleItem}
 
     // Variable size dictionary of SetData structs
     access(self) var setDatas: {UInt32: SetData}
@@ -54,10 +54,10 @@ pub contract KOTD: NonFungibleToken {
     // Variable size dictionary of Set resources
     access(self) var sets: @{UInt32: Set}
 
-    // The ID that is used to create Moments. 
-    // Every time a Moment is created, momentID is assigned 
-    // to the new Moment's ID and then is incremented by 1.
-    pub var nextMomentID: UInt32
+    // The ID that is used to create CollectibleItems. 
+    // Every time a CollectibleItem is created, collectibleItemID is assigned 
+    // to the new CollectibleItem's ID and then is incremented by 1.
+    pub var nextCollectibleItemID: UInt32
 
     // The ID that is used to create Sets. Every time a Set is created
     // setID is assigned to the new set's ID and then is incremented by 1.
@@ -77,21 +77,21 @@ pub contract KOTD: NonFungibleToken {
     // can be created by this contract that contains stored values.
     // -----------------------------------------------------------------------
     
-    // Moment is a Struct that holds metadata associated 
-    // with a specific NBA moment, like the legendary moment when 
+    // CollectibleItem is a Struct that holds metadata associated 
+    // with a specific NBA collectibleItem, like the legendary collectibleItem when 
     // Ray Allen hit the 3 to tie the Heat and Spurs in the 2013 finals game 6
     // or when Lance Stephenson blew in the ear of Lebron James.
     //
-    // Collectible NFTs will all reference a single moment as the owner of
-    // its metadata. The moments are publicly accessible, so anyone can
-    // read the metadata associated with a specific moment ID
+    // Collectible NFTs will all reference a single collectibleItem as the owner of
+    // its metadata. The collectibleItems are publicly accessible, so anyone can
+    // read the metadata associated with a specific collectibleItem ID
     //
-    pub struct Moment {
+    pub struct CollectibleItem {
 
-        // The unique ID for the Moment
-        pub let momentID: UInt32
+        // The unique ID for the CollectibleItem
+        pub let collectibleItemID: UInt32
 
-        // Stores all the metadata about the moment as a string mapping
+        // Stores all the metadata about the collectibleItem as a string mapping
         // This is not the long term way NFT metadata will be stored. It's a temporary
         // construct while we figure out a better way to do metadata.
         //
@@ -99,21 +99,21 @@ pub contract KOTD: NonFungibleToken {
 
         init(metadata: {String: String}) {
             pre {
-                metadata.length != 0: "New Moment metadata cannot be empty"
+                metadata.length != 0: "New CollectibleItem metadata cannot be empty"
             }
-            self.momentID = KOTD.nextMomentID
+            self.collectibleItemID = KOTD.nextCollectibleItemID
             self.metadata = metadata
 
             // Increment the ID so that it isn't used again
-            KOTD.nextMomentID = KOTD.nextMomentID + UInt32(1)
+            KOTD.nextCollectibleItemID = KOTD.nextCollectibleItemID + UInt32(1)
 
-            emit MomentCreated(id: self.momentID, metadata: metadata)
+            emit CollectibleItemCreated(id: self.collectibleItemID, metadata: metadata)
         }
     }
 
-    // A Set is a grouping of Moments that have occured in the real world
+    // A Set is a grouping of CollectibleItems that have occured in the real world
     // that make up a related group of collectibles, like sets of baseball
-    // or Magic cards. A Moment can exist in multiple different sets.
+    // or Magic cards. A CollectibleItem can exist in multiple different sets.
     // 
     // SetData is a struct that is stored in a field of the contract.
     // Anyone can query the constant information
@@ -151,20 +151,20 @@ pub contract KOTD: NonFungibleToken {
     }
 
     // Set is a resource type that contains the functions to add and remove
-    // Moments from a set and mint Collectibles.
+    // CollectibleItems from a set and mint Collectibles.
     //
     // It is stored in a private field in the contract so that
     // the admin resource can call its methods.
     //
-    // The admin can add Moments to a Set so that the set can mint Collectibles
+    // The admin can add CollectibleItems to a Set so that the set can mint Collectibles
     // that reference that playdata.
     // The Collectibles that are minted by a Set will be listed as belonging to
-    // the Set that minted it, as well as the Moment it references.
+    // the Set that minted it, as well as the CollectibleItem it references.
     // 
-    // Admin can also retire Moments from the Set, meaning that the retired
-    // Moment can no longer have Collectibles minted from it.
+    // Admin can also retire CollectibleItems from the Set, meaning that the retired
+    // CollectibleItem can no longer have Collectibles minted from it.
     //
-    // If the admin locks the Set, no more Moments can be added to it, but 
+    // If the admin locks the Set, no more CollectibleItems can be added to it, but 
     // Collectibles can still be minted.
     //
     // If retireAll() and lock() are called back-to-back, 
@@ -174,112 +174,112 @@ pub contract KOTD: NonFungibleToken {
         // Unique ID for the set
         pub let setID: UInt32
 
-        // Array of moments that are a part of this set.
-        // When a moment is added to the set, its ID gets appended here.
-        // The ID does not get removed from this array when a Moment is retired.
-        pub var moments: [UInt32]
+        // Array of collectibleItems that are a part of this set.
+        // When a collectibleItem is added to the set, its ID gets appended here.
+        // The ID does not get removed from this array when a CollectibleItem is retired.
+        pub var collectibleItems: [UInt32]
 
-        // Map of Moment IDs that Indicates if a Moment in this Set can be minted.
-        // When a Moment is added to a Set, it is mapped to false (not retired).
-        // When a Moment is retired, this is set to true and cannot be changed.
+        // Map of CollectibleItem IDs that Indicates if a CollectibleItem in this Set can be minted.
+        // When a CollectibleItem is added to a Set, it is mapped to false (not retired).
+        // When a CollectibleItem is retired, this is set to true and cannot be changed.
         pub var retired: {UInt32: Bool}
 
         // Indicates if the Set is currently locked.
         // When a Set is created, it is unlocked 
-        // and Moments are allowed to be added to it.
-        // When a set is locked, Moments cannot be added.
+        // and CollectibleItems are allowed to be added to it.
+        // When a set is locked, CollectibleItems cannot be added.
         // A Set can never be changed from locked to unlocked,
         // the decision to lock a Set it is final.
-        // If a Set is locked, Moments cannot be added, but
-        // Collectibles can still be minted from Moments
+        // If a Set is locked, CollectibleItems cannot be added, but
+        // Collectibles can still be minted from CollectibleItems
         // that exist in the Set.
         pub var locked: Bool
 
-        // Mapping of Moment IDs that indicates the number of Collectibles 
-        // that have been minted for specific Moments in this Set.
+        // Mapping of CollectibleItem IDs that indicates the number of Collectibles 
+        // that have been minted for specific CollectibleItems in this Set.
         // When a Collectible is minted, this value is stored in the Collectible to
         // show its place in the Set, eg. 13 of 60.
-        pub var numberMintedPerMoment: {UInt32: UInt32}
+        pub var numberMintedPerCollectibleItem: {UInt32: UInt32}
 
         init(name: String) {
             self.setID = KOTD.nextSetID
-            self.moments = []
+            self.collectibleItems = []
             self.retired = {}
             self.locked = false
-            self.numberMintedPerMoment = {}
+            self.numberMintedPerCollectibleItem = {}
 
             // Create a new SetData for this Set and store it in contract storage
             KOTD.setDatas[self.setID] = SetData(name: name)
         }
 
-        // addMoment adds a moment to the set
+        // addCollectibleItem adds a collectibleItem to the set
         //
-        // Parameters: momentID: The ID of the Moment that is being added
+        // Parameters: collectibleItemID: The ID of the CollectibleItem that is being added
         //
         // Pre-Conditions:
-        // The Moment needs to be an existing moment
+        // The CollectibleItem needs to be an existing collectibleItem
         // The Set needs to be not locked
-        // The Moment can't have already been added to the Set
+        // The CollectibleItem can't have already been added to the Set
         //
-        pub fun addMoment(momentID: UInt32) {
+        pub fun addCollectibleItem(collectibleItemID: UInt32) {
             pre {
-                KOTD.momentDatas[momentID] != nil: "Cannot add the Moment to Set: Moment doesn't exist."
-                !self.locked: "Cannot add the moment to the Set after the set has been locked."
-                self.numberMintedPerMoment[momentID] == nil: "The moment has already beed added to the set."
+                KOTD.collectibleItemDatas[collectibleItemID] != nil: "Cannot add the CollectibleItem to Set: CollectibleItem doesn't exist."
+                !self.locked: "Cannot add the collectibleItem to the Set after the set has been locked."
+                self.numberMintedPerCollectibleItem[collectibleItemID] == nil: "The collectibleItem has already beed added to the set."
             }
 
-            // Add the Moment to the array of Moments
-            self.moments.append(momentID)
+            // Add the CollectibleItem to the array of CollectibleItems
+            self.collectibleItems.append(collectibleItemID)
 
-            // Open the Moment up for minting
-            self.retired[momentID] = false
+            // Open the CollectibleItem up for minting
+            self.retired[collectibleItemID] = false
 
             // Initialize the Collectible count to zero
-            self.numberMintedPerMoment[momentID] = 0
+            self.numberMintedPerCollectibleItem[collectibleItemID] = 0
 
-            emit MomentAddedToSet(setID: self.setID, momentID: momentID)
+            emit CollectibleItemAddedToSet(setID: self.setID, collectibleItemID: collectibleItemID)
         }
 
-        // addMoments adds multiple Moments to the Set
+        // addCollectibleItems adds multiple CollectibleItems to the Set
         //
-        // Parameters: momentIDs: The IDs of the Moments that are being added
+        // Parameters: collectibleItemIDs: The IDs of the CollectibleItems that are being added
         //                      as an array
         //
-        pub fun addMoments(momentIDs: [UInt32]) {
-            for moment in momentIDs {
-                self.addMoment(momentID: moment)
+        pub fun addCollectibleItems(collectibleItemIDs: [UInt32]) {
+            for collectibleItem in collectibleItemIDs {
+                self.addCollectibleItem(collectibleItemID: collectibleItem)
             }
         }
 
-        // retireMoment retires a Moment from the Set so that it can't mint new Collectibles
+        // retireCollectibleItem retires a CollectibleItem from the Set so that it can't mint new Collectibles
         //
-        // Parameters: momentID: The ID of the Moment that is being retired
+        // Parameters: collectibleItemID: The ID of the CollectibleItem that is being retired
         //
         // Pre-Conditions:
-        // The Moment is part of the Set and not retired (available for minting).
+        // The CollectibleItem is part of the Set and not retired (available for minting).
         // 
-        pub fun retireMoment(momentID: UInt32) {
+        pub fun retireCollectibleItem(collectibleItemID: UInt32) {
             pre {
-                self.retired[momentID] != nil: "Cannot retire the Moment: Moment doesn't exist in this set!"
+                self.retired[collectibleItemID] != nil: "Cannot retire the CollectibleItem: CollectibleItem doesn't exist in this set!"
             }
 
-            if !self.retired[momentID]! {
-                self.retired[momentID] = true
+            if !self.retired[collectibleItemID]! {
+                self.retired[collectibleItemID] = true
 
-                emit MomentRetiredFromSet(setID: self.setID, momentID: momentID, numMoments: self.numberMintedPerMoment[momentID]!)
+                emit CollectibleItemRetiredFromSet(setID: self.setID, collectibleItemID: collectibleItemID, numCollectibleItems: self.numberMintedPerCollectibleItem[collectibleItemID]!)
             }
         }
 
-        // retireAll retires all the moments in the Set
-        // Afterwards, none of the retired Moments will be able to mint new Collectibles
+        // retireAll retires all the collectibleItems in the Set
+        // Afterwards, none of the retired CollectibleItems will be able to mint new Collectibles
         //
         pub fun retireAll() {
-            for moment in self.moments {
-                self.retireMoment(momentID: moment)
+            for collectibleItem in self.collectibleItems {
+                self.retireCollectibleItem(collectibleItemID: collectibleItem)
             }
         }
 
-        // lock() locks the Set so that no more Moments can be added to it
+        // lock() locks the Set so that no more CollectibleItems can be added to it
         //
         // Pre-Conditions:
         // The Set should not be locked
@@ -292,30 +292,30 @@ pub contract KOTD: NonFungibleToken {
 
         // mintCollectible mints a new Collectible and returns the newly minted Collectible
         // 
-        // Parameters: momentID: The ID of the Moment that the Collectible references
+        // Parameters: collectibleItemID: The ID of the CollectibleItem that the Collectible references
         //
         // Pre-Conditions:
-        // The Moment must exist in the Set and be allowed to mint new Collectibles
+        // The CollectibleItem must exist in the Set and be allowed to mint new Collectibles
         //
         // Returns: The NFT that was minted
         // 
-        pub fun mintCollectible(momentID: UInt32): @NFT {
+        pub fun mintCollectible(collectibleItemID: UInt32): @NFT {
             pre {
-                self.retired[momentID] != nil: "Cannot mint the moment: This moment doesn't exist."
-                !self.retired[momentID]!: "Cannot mint the moment from this moment: This moment has been retired."
+                self.retired[collectibleItemID] != nil: "Cannot mint the collectibleItem: This collectibleItem doesn't exist."
+                !self.retired[collectibleItemID]!: "Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired."
             }
 
-            // Gets the number of Collectibles that have been minted for this Moment
+            // Gets the number of Collectibles that have been minted for this CollectibleItem
             // to use as this Collectible's serial number
-            let numInPlay = self.numberMintedPerMoment[momentID]!
+            let numInPlay = self.numberMintedPerCollectibleItem[collectibleItemID]!
 
-            // Mint the new moment
+            // Mint the new collectibleItem
             let newCollectible: @NFT <- create NFT(serialNumber: numInPlay + UInt32(1),
-                                              momentID: momentID,
+                                              collectibleItemID: collectibleItemID,
                                               setID: self.setID)
 
-            // Increment the count of Collectibles minted for this Moment
-            self.numberMintedPerMoment[momentID] = numInPlay + UInt32(1)
+            // Increment the count of Collectibles minted for this CollectibleItem
+            self.numberMintedPerCollectibleItem[collectibleItemID] = numInPlay + UInt32(1)
 
             return <-newCollectible
         }
@@ -323,17 +323,17 @@ pub contract KOTD: NonFungibleToken {
         // batchMintCollectible mints an arbitrary quantity of Collectibles 
         // and returns them as a Collection
         //
-        // Parameters: momentID: the ID of the Moment that the Collectibles are minted for
+        // Parameters: collectibleItemID: the ID of the CollectibleItem that the Collectibles are minted for
         //             quantity: The quantity of Collectibles to be minted
         //
         // Returns: Collection object that contains all the Collectibles that were minted
         //
-        pub fun batchMintCollectible(momentID: UInt32, quantity: UInt64): @Collection {
+        pub fun batchMintCollectible(collectibleItemID: UInt32, quantity: UInt64): @Collection {
             let newCollection <- create Collection()
 
             var i: UInt64 = 0
             while i < quantity {
-                newCollection.deposit(token: <-self.mintCollectible(momentID: momentID))
+                newCollection.deposit(token: <-self.mintCollectible(collectibleItemID: collectibleItemID))
                 i = i + UInt64(1)
             }
 
@@ -346,16 +346,16 @@ pub contract KOTD: NonFungibleToken {
         // The ID of the Set that the Collectible comes from
         pub let setID: UInt32
 
-        // The ID of the Moment that the Collectible references
-        pub let momentID: UInt32
+        // The ID of the CollectibleItem that the Collectible references
+        pub let collectibleItemID: UInt32
 
         // The place in the edition that this Collectible was minted
         // Otherwise know as the serial number
         pub let serialNumber: UInt32
 
-        init(setID: UInt32, momentID: UInt32, serialNumber: UInt32) {
+        init(setID: UInt32, collectibleItemID: UInt32, serialNumber: UInt32) {
             self.setID = setID
-            self.momentID = momentID
+            self.collectibleItemID = collectibleItemID
             self.serialNumber = serialNumber
         }
 
@@ -364,26 +364,26 @@ pub contract KOTD: NonFungibleToken {
 
     // Admin is a special authorization resource that 
     // allows the owner to perform important functions to modify the 
-    // various aspects of the Moments, Sets, and Collectibles
+    // various aspects of the CollectibleItems, Sets, and Collectibles
     
     pub resource Admin {
 
-        // createMoment creates a new Moment struct 
-        // and stores it in the Moments dictionary in the KOTD smart contract
+        // createCollectibleItem creates a new CollectibleItem struct 
+        // and stores it in the CollectibleItems dictionary in the KOTD smart contract
         //
         // Parameters: metadata: A dictionary mapping metadata titles to their data
         //                       example: {"Player Name": "Kevin Durant", "Height": "7 feet"}
         //                               (because we all know Kevin Durant is not 6'9")
         //
-        // Returns: the ID of the new Moment object
+        // Returns: the ID of the new CollectibleItem object
         //
-        pub fun createMoment(metadata: {String: String}): UInt32 {
-            // Create the new Moment
-            var newMoment = Moment(metadata: metadata)
-            let newID = newMoment.momentID
+        pub fun createCollectibleItem(metadata: {String: String}): UInt32 {
+            // Create the new CollectibleItem
+            var newCollectibleItem = CollectibleItem(metadata: metadata)
+            let newID = newCollectibleItem.collectibleItemID
 
             // Store it in the contract storage
-            KOTD.momentDatas[newID] = newMoment
+            KOTD.collectibleItemDatas[newID] = newCollectibleItem
 
             return newID
         }
@@ -447,22 +447,22 @@ pub contract KOTD: NonFungibleToken {
     //
     pub resource NFT: NonFungibleToken.INFT {
 
-        // Global unique moment ID
+        // Global unique collectibleItem ID
         pub let id: UInt64
         
         // Struct of Collectible metadata
         pub let data: CollectibleData
 
-        init(serialNumber: UInt32, momentID: UInt32, setID: UInt32) {
+        init(serialNumber: UInt32, collectibleItemID: UInt32, setID: UInt32) {
             // Increment the global Collectible IDs
             KOTD.totalSupply = KOTD.totalSupply + UInt64(1)
 
             self.id = KOTD.totalSupply
 
             // Set the metadata struct
-            self.data = CollectibleData(setID: setID, momentID: momentID, serialNumber: serialNumber)
+            self.data = CollectibleData(setID: setID, collectibleItemID: collectibleItemID, serialNumber: serialNumber)
 
-            emit CollectibleMinted(collectibleID: self.id, momentID: momentID, setID: self.data.setID, serialNumber: self.data.serialNumber)
+            emit CollectibleMinted(collectibleID: self.id, collectibleItemID: collectibleItemID, setID: self.data.setID, serialNumber: self.data.serialNumber)
         }
 
         // If the Collectible is destroyed, emit an event to indicate 
@@ -526,7 +526,7 @@ pub contract KOTD: NonFungibleToken {
         // Parameters: ids: An array of IDs to withdraw
         //
         // Returns: @NonFungibleToken.Collection: A collection that contains
-        //                                        the withdrawn moments
+        //                                        the withdrawn collectibleItems
         //
         pub fun batchWithdraw(ids: [UInt64]): @NonFungibleToken.Collection {
             // Create a new empty Collection
@@ -605,9 +605,9 @@ pub contract KOTD: NonFungibleToken {
 
         // borrowCollectible returns a borrowed reference to a Collectible
         // so that the caller can read data and call methods from it.
-        // They can use this to read its setID, momentID, serialNumber,
-        // or any of the setData or Moment data associated with it by
-        // getting the setID or momentID and reading those fields from
+        // They can use this to read its setID, collectibleItemID, serialNumber,
+        // or any of the setData or CollectibleItem data associated with it by
+        // getting the setID or collectibleItemID and reading those fields from
         // the smart contract.
         //
         // Parameters: id: The ID of the NFT to get the reference for
@@ -645,35 +645,35 @@ pub contract KOTD: NonFungibleToken {
         return <-create KOTD.Collection()
     }
 
-    // getAllMoments returns all the moments in KOTD
+    // getAllCollectibleItems returns all the collectibleItems in KOTD
     //
-    // Returns: An array of all the moments that have been created
-    pub fun getAllMoments(): [KOTD.Moment] {
-        return KOTD.momentDatas.values
+    // Returns: An array of all the collectibleItems that have been created
+    pub fun getAllCollectibleItems(): [KOTD.CollectibleItem] {
+        return KOTD.collectibleItemDatas.values
     }
 
-    // getMomentMetaData returns all the metadata associated with a specific Moment
+    // getCollectibleItemMetaData returns all the metadata associated with a specific CollectibleItem
     // 
-    // Parameters: momentID: The id of the Moment that is being searched
+    // Parameters: collectibleItemID: The id of the CollectibleItem that is being searched
     //
     // Returns: The metadata as a String to String mapping optional
-    pub fun getMomentMetaData(momentID: UInt32): {String: String}? {
-        return self.momentDatas[momentID]?.metadata
+    pub fun getCollectibleItemMetaData(collectibleItemID: UInt32): {String: String}? {
+        return self.collectibleItemDatas[collectibleItemID]?.metadata
     }
 
-    // getMomentMetaDataByField returns the metadata associated with a 
+    // getCollectibleItemMetaDataByField returns the metadata associated with a 
     //                        specific field of the metadata
     //                        Ex: field: "Team" will return something
     //                        like "Memphis Grizzlies"
     // 
-    // Parameters: momentID: The id of the Moment that is being searched
+    // Parameters: collectibleItemID: The id of the CollectibleItem that is being searched
     //             field: The field to search for
     //
     // Returns: The metadata field as a String Optional
-    pub fun getMomentMetaDataByField(momentID: UInt32, field: String): String? {
-        // Don't force a revert if the momentID or field is invalid
-        if let moment = KOTD.momentDatas[momentID] {
-            return moment.metadata[field]
+    pub fun getCollectibleItemMetaDataByField(collectibleItemID: UInt32, field: String): String? {
+        // Don't force a revert if the collectibleItemID or field is invalid
+        if let collectibleItem = KOTD.collectibleItemDatas[collectibleItemID] {
+            return collectibleItem.metadata[field]
         } else {
             return nil
         }
@@ -727,32 +727,32 @@ pub contract KOTD: NonFungibleToken {
         }
     }
 
-    // getMomentsInSet returns the list of Moment IDs that are in the Set
+    // getCollectibleItemsInSet returns the list of CollectibleItem IDs that are in the Set
     // 
     // Parameters: setID: The id of the Set that is being searched
     //
-    // Returns: An array of Moment IDs
-    pub fun getMomentsInSet(setID: UInt32): [UInt32]? {
+    // Returns: An array of CollectibleItem IDs
+    pub fun getCollectibleItemsInSet(setID: UInt32): [UInt32]? {
         // Don't force a revert if the setID is invalid
-        return KOTD.sets[setID]?.moments
+        return KOTD.sets[setID]?.collectibleItems
     }
 
-    // isEditionRetired returns a boolean that indicates if a Set/Moment combo
+    // isEditionRetired returns a boolean that indicates if a Set/CollectibleItem combo
     //                  (otherwise known as an edition) is retired.
     //                  If an edition is retired, it still remains in the Set,
     //                  but Collectibles can no longer be minted from it.
     // 
     // Parameters: setID: The id of the Set that is being searched
-    //             momentID: The id of the Moment that is being searched
+    //             collectibleItemID: The id of the CollectibleItem that is being searched
     //
     // Returns: Boolean indicating if the edition is retired or not
-    pub fun isEditionRetired(setID: UInt32, momentID: UInt32): Bool? {
-        // Don't force a revert if the set or moment ID is invalid
+    pub fun isEditionRetired(setID: UInt32, collectibleItemID: UInt32): Bool? {
+        // Don't force a revert if the set or collectibleItem ID is invalid
         // Remove the set from the dictionary to get its field
         if let setToRead <- KOTD.sets.remove(key: setID) {
 
-            // See if the Moment is retired from this Set
-            let retired = setToRead.retired[momentID]
+            // See if the CollectibleItem is retired from this Set
+            let retired = setToRead.retired[collectibleItemID]
 
             // Put the Set back in the contract storage
             KOTD.sets[setID] <-! setToRead
@@ -768,8 +768,8 @@ pub contract KOTD: NonFungibleToken {
 
     // isSetLocked returns a boolean that indicates if a Set
     //             is locked. If it's locked, 
-    //             new Moments can no longer be added to it,
-    //             but Collectibles can still be minted from Moments the set contains.
+    //             new CollectibleItems can no longer be added to it,
+    //             but Collectibles can still be minted from CollectibleItems the set contains.
     // 
     // Parameters: setID: The id of the Set that is being searched
     //
@@ -779,21 +779,21 @@ pub contract KOTD: NonFungibleToken {
         return KOTD.sets[setID]?.locked
     }
 
-    // getNumMomentsInEdition return the number of Collectibles that have been 
+    // getNumCollectibleItemsInEdition return the number of Collectibles that have been 
     //                        minted from a certain edition.
     //
     // Parameters: setID: The id of the Set that is being searched
-    //             momentID: The id of the Moment that is being searched
+    //             collectibleItemID: The id of the CollectibleItem that is being searched
     //
     // Returns: The total number of Collectibles 
     //          that have been minted from an edition
-    pub fun getNumMomentsInEdition(setID: UInt32, momentID: UInt32): UInt32? {
-        // Don't force a revert if the Set or moment ID is invalid
+    pub fun getNumCollectibleItemsInEdition(setID: UInt32, collectibleItemID: UInt32): UInt32? {
+        // Don't force a revert if the Set or collectibleItem ID is invalid
         // Remove the Set from the dictionary to get its field
         if let setToRead <- KOTD.sets.remove(key: setID) {
 
             // Read the numMintedPerPlay
-            let amount = setToRead.numberMintedPerMoment[momentID]
+            let amount = setToRead.numberMintedPerCollectibleItem[collectibleItemID]
 
             // Put the Set back into the Sets dictionary
             KOTD.sets[setID] <-! setToRead
@@ -812,21 +812,21 @@ pub contract KOTD: NonFungibleToken {
     init() {
         // Initialize contract fields
         self.currentSeries = 0
-        self.momentDatas = {}
+        self.collectibleItemDatas = {}
         self.setDatas = {}
         self.sets <- {}
-        self.nextMomentID = 1
+        self.nextCollectibleItemID = 1
         self.nextSetID = 1
         self.totalSupply = 0
 
         // Put a new Collection in storage @TODO: change to "CollectibleCollection"
-        self.account.save<@Collection>(<- create Collection(), to: /storage/MomentCollection001)
+        self.account.save<@Collection>(<- create Collection(), to: /storage/CollectibleCollection002)
 
         // Create a public capability for the Collection
-        self.account.link<&{CollectibleCollectionPublic}>(/public/MomentCollection, target: /storage/MomentCollection001)
+        self.account.link<&{CollectibleCollectionPublic}>(/public/CollectibleCollection, target: /storage/CollectibleCollection002)
 
         // Put the Minter in storage
-        self.account.save<@Admin>(<- create Admin(), to: /storage/KOTDAdmin001)
+        self.account.save<@Admin>(<- create Admin(), to: /storage/KOTDAdmin002)
 
         emit ContractInitialized()
     }

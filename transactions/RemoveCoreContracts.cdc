@@ -2,8 +2,6 @@
 
 transaction {
     prepare(signer: AuthAccount) {
-        let NFTContractRemover = signer.contracts.remove(name: "LikeNastyaItems")
-        let NFTContractRemover2 = signer.contracts.remove(name: "Dollar")
-        let NFTContractRemover3 = signer.contracts.remove(name: "LikeNastyaItemsMarket")
+        let NFTContractRemover = signer.contracts.remove(name: "KOTD")
     }
 }

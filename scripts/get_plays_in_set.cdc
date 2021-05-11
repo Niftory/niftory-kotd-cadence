@@ -12,7 +12,7 @@ import KOTD from 0x9f3e19cda04154fc
 
 pub fun main(setID: UInt32): [UInt32] {
 
-    let plays = KOTD.getPlaysInSet(setID: setID)!
+    let collectibleItems = KOTD.getCollectibleItemsInSet(setID: setID)!
 
-    return plays
+    return collectibleItems
 }

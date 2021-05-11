@@ -16,7 +16,7 @@ transaction(setName: String) {
     prepare(acct: AuthAccount) {
 
         // borrow a reference to the Admin resource in storage
-        self.adminRef = acct.borrow<&KOTD.Admin>(from: /storage/KOTDAdmin001)
+        self.adminRef = acct.borrow<&KOTD.Admin>(from: /storage/KOTDAdmin002)
             ?? panic("Could not borrow a reference to the Admin resource")
         self.currSetID = KOTD.nextSetID;
     }

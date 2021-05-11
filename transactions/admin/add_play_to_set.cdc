@@ -5,9 +5,9 @@ import KOTD from 0x9f3e19cda04154fc
 // Parameters:
 //
 // setID: the ID of the set to which a created play is added
-// momentID: the ID of the play being added
+// collectibleItemID: the ID of the play being added
 
-transaction(setID: UInt32, momentID: UInt32) {
+transaction(setID: UInt32, collectibleItemID: UInt32) {
 
     // Local variable for the topshot Admin object
     let adminRef: &KOTD.Admin
@@ -15,7 +15,7 @@ transaction(setID: UInt32, momentID: UInt32) {
     prepare(acct: AuthAccount) {
 
         // borrow a reference to the Admin resource in storage
-        self.adminRef = acct.borrow<&KOTD.Admin>(from: /storage/KOTDAdmin001)
+        self.adminRef = acct.borrow<&KOTD.Admin>(from: /storage/KOTDAdmin002)
             ?? panic("Could not borrow a reference to the Admin resource")
     }
 
@@ -25,12 +25,12 @@ transaction(setID: UInt32, momentID: UInt32) {
         let setRef = self.adminRef.borrowSet(setID: setID)
 
         // Add the specified play ID
-        setRef.addMoment(momentID: momentID)
+        setRef.addCollectibleItem(collectibleItemID: collectibleItemID)
     }
 
     post {
 
-        KOTD.getMomentsInSet(setID: setID)!.contains(momentID): 
-            "set does not contain momentID"
+        KOTD.getCollectibleItemsInSet(setID: setID)!.contains(collectibleItemID): 
+            "set does not contain collectibleItemID"
     }
 }
