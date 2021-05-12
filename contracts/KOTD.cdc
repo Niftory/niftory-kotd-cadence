@@ -759,6 +759,7 @@ pub contract KOTD: NonFungibleToken {
         return KOTD.sets[setID]?.locked
     }
 
+    // @TODO: refactor to "getNumCollectiblesInEdition"
     // getNumCollectibleItemsInEdition return the number of Collectibles that have been 
     //                        minted from a certain edition.
     //
