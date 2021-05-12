@@ -64,8 +64,7 @@ pub contract KOTD: NonFungibleToken {
     pub var nextSetID: UInt32
     
     // totalSupply
-    // The total number of KOTD that have been minted
-    //
+    // The total number of KOTD Collectibles that have been minted
     pub var totalSupply: UInt64
 
     // -----------------------------------------------------------------------
@@ -78,23 +77,18 @@ pub contract KOTD: NonFungibleToken {
     // -----------------------------------------------------------------------
     
     // CollectibleItem is a Struct that holds metadata associated 
-    // with a specific NBA collectibleItem, like the legendary collectibleItem when 
-    // Ray Allen hit the 3 to tie the Heat and Spurs in the 2013 finals game 6
-    // or when Lance Stephenson blew in the ear of Lebron James.
-    //
-    // Collectible NFTs will all reference a single collectibleItem as the owner of
-    // its metadata. The collectibleItems are publicly accessible, so anyone can
-    // read the metadata associated with a specific collectibleItem ID
-    //
+    // with a moment, entity, or other representative collectible.
+    // Collectible NFTs will all reference a single CollectibleItem as the owner of
+    // its metadata. CllectibleItems are publicly accessible, so anyone can
+    // read the metadata associated with a specific CollectibleItem ID
+    
     pub struct CollectibleItem {
 
         // The unique ID for the CollectibleItem
         pub let collectibleItemID: UInt32
 
-        // Stores all the metadata about the collectibleItem as a string mapping
-        // This is not the long term way NFT metadata will be stored. It's a temporary
-        // construct while we figure out a better way to do metadata.
-        //
+        // Stores all the metadata about the CollectibleItem as a string mapping
+        
         pub let metadata: {String: String}
 
         init(metadata: {String: String}) {
@@ -111,28 +105,25 @@ pub contract KOTD: NonFungibleToken {
         }
     }
 
-    // A Set is a grouping of CollectibleItems that have occured in the real world
-    // that make up a related group of collectibles, like sets of baseball
-    // or Magic cards. A CollectibleItem can exist in multiple different sets.
-    // 
+    // A Set is a grouping of CollectibleItems that make up a related group of collectibles, 
+    // like sets of baseball or Magic cards. A CollectibleItem can exist in multiple different sets.
     // SetData is a struct that is stored in a field of the contract.
     // Anyone can query the constant information
     // about a set by calling various getters located 
     // at the end of the contract. Only the admin has the ability 
     // to modify any data in the private Set resource.
-    //
+    
     pub struct SetData {
 
         // Unique ID for the Set
         pub let setID: UInt32
 
         // Name of the Set
-        // ex. "Times when the Toronto Raptors choked in the playoffs"
         pub let name: String
 
         // Series that this Set belongs to.
         // Series is a concept that indicates a group of Sets through time.
-        // Many Sets can exist at a time, but only one series.
+        // Many Sets can exist at a time, but only one Series.
         pub let series: UInt32
 
         init(name: String) {
@@ -220,7 +211,7 @@ pub contract KOTD: NonFungibleToken {
         // The CollectibleItem needs to be an existing collectibleItem
         // The Set needs to be not locked
         // The CollectibleItem can't have already been added to the Set
-        //
+        
         pub fun addCollectibleItem(collectibleItemID: UInt32) {
             pre {
                 KOTD.collectibleItemDatas[collectibleItemID] != nil: "Cannot add the CollectibleItem to Set: CollectibleItem doesn't exist."
@@ -244,7 +235,7 @@ pub contract KOTD: NonFungibleToken {
         //
         // Parameters: collectibleItemIDs: The IDs of the CollectibleItems that are being added
         //                      as an array
-        //
+        
         pub fun addCollectibleItems(collectibleItemIDs: [UInt32]) {
             for collectibleItem in collectibleItemIDs {
                 self.addCollectibleItem(collectibleItemID: collectibleItem)
@@ -257,7 +248,7 @@ pub contract KOTD: NonFungibleToken {
         //
         // Pre-Conditions:
         // The CollectibleItem is part of the Set and not retired (available for minting).
-        // 
+        
         pub fun retireCollectibleItem(collectibleItemID: UInt32) {
             pre {
                 self.retired[collectibleItemID] != nil: "Cannot retire the CollectibleItem: CollectibleItem doesn't exist in this set!"
@@ -272,7 +263,7 @@ pub contract KOTD: NonFungibleToken {
 
         // retireAll retires all the collectibleItems in the Set
         // Afterwards, none of the retired CollectibleItems will be able to mint new Collectibles
-        //
+        
         pub fun retireAll() {
             for collectibleItem in self.collectibleItems {
                 self.retireCollectibleItem(collectibleItemID: collectibleItem)
@@ -298,7 +289,7 @@ pub contract KOTD: NonFungibleToken {
         // The CollectibleItem must exist in the Set and be allowed to mint new Collectibles
         //
         // Returns: The NFT that was minted
-        // 
+        
         pub fun mintCollectible(collectibleItemID: UInt32): @NFT {
             pre {
                 self.retired[collectibleItemID] != nil: "Cannot mint the collectibleItem: This collectibleItem doesn't exist."
@@ -327,7 +318,7 @@ pub contract KOTD: NonFungibleToken {
         //             quantity: The quantity of Collectibles to be minted
         //
         // Returns: Collection object that contains all the Collectibles that were minted
-        //
+        
         pub fun batchMintCollectible(collectibleItemID: UInt32, quantity: UInt64): @Collection {
             let newCollection <- create Collection()
 
@@ -364,8 +355,7 @@ pub contract KOTD: NonFungibleToken {
 
     // Admin is a special authorization resource that 
     // allows the owner to perform important functions to modify the 
-    // various aspects of the CollectibleItems, Sets, and Collectibles
-    
+    // various aspects of the CollectibleItems, Sets, and Collectibles  
     pub resource Admin {
 
         // createCollectibleItem creates a new CollectibleItem struct 
@@ -376,7 +366,7 @@ pub contract KOTD: NonFungibleToken {
         //                               (because we all know Kevin Durant is not 6'9")
         //
         // Returns: the ID of the new CollectibleItem object
-        //
+
         pub fun createCollectibleItem(metadata: {String: String}): UInt32 {
             // Create the new CollectibleItem
             var newCollectibleItem = CollectibleItem(metadata: metadata)
@@ -392,7 +382,7 @@ pub contract KOTD: NonFungibleToken {
         // in the sets mapping in the KOTD contract
         //
         // Parameters: name: The name of the Set
-        //
+        
         pub fun createSet(name: String) {
             // Create the new Set
             var newSet <- create Set(name: name)
@@ -409,7 +399,7 @@ pub contract KOTD: NonFungibleToken {
         //
         // Returns: A reference to the Set with all of the fields
         // and methods exposed
-        //
+        
         pub fun borrowSet(setID: UInt32): &Set {
             pre {
                 KOTD.sets[setID] != nil: "Cannot borrow Set: The Set doesn't exist"
@@ -425,7 +415,7 @@ pub contract KOTD: NonFungibleToken {
         // will use the new series number
         //
         // Returns: The new series number
-        //
+        
         pub fun startNewSeries(): UInt32 {
             // End the current series and start a new one
             // by incrementing the KOTD series number
@@ -437,14 +427,12 @@ pub contract KOTD: NonFungibleToken {
         }
 
         // createNewAdmin creates a new Admin resource
-        //
         pub fun createNewAdmin(): @Admin {
             return <-create Admin()
         }
     }
 
     // The resource that represents the Collectible NFTs
-    //
     pub resource NFT: NonFungibleToken.INFT {
 
         // Global unique collectibleItem ID
@@ -491,9 +479,8 @@ pub contract KOTD: NonFungibleToken {
         }
     }
 
-       // Collection is a resource that every user who owns NFTs 
+    // Collection is a resource that every user who owns NFTs 
     // will store in their account to manage their NFTS
-    //
     pub resource Collection: CollectibleCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic { 
         // Dictionary of Collectible conforming tokens
         // NFT is a resource type with a UInt64 ID field
@@ -527,7 +514,6 @@ pub contract KOTD: NonFungibleToken {
         //
         // Returns: @NonFungibleToken.Collection: A collection that contains
         //                                        the withdrawn collectibleItems
-        //
         pub fun batchWithdraw(ids: [UInt64]): @NonFungibleToken.Collection {
             // Create a new empty Collection
             var batchCollection <- create Collection()
@@ -544,7 +530,6 @@ pub contract KOTD: NonFungibleToken {
         // deposit takes a Collectible and adds it to the Collections dictionary
         //
         // Paramters: token: the NFT to be deposited in the collection
-        //
         pub fun deposit(token: @NonFungibleToken.NFT) {
             
             // Cast the deposited token as a KOTD NFT to make sure
@@ -598,7 +583,6 @@ pub contract KOTD: NonFungibleToken {
         // Note: This only allows the caller to read the ID of the NFT,
         // not any KOTD specific data. Please use borrowCollectible to 
         // read Collectible data.
-        //
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
             return &self.ownedNFTs[id] as &NonFungibleToken.NFT
         }
@@ -624,9 +608,6 @@ pub contract KOTD: NonFungibleToken {
 
         // If a transaction destroys the Collection object,
         // All the NFTs contained within are also destroyed!
-        // Much like when Damian Lillard destroys the hopes and
-        // dreams of the entire city of Houston.
-        //
         destroy() {
             destroy self.ownedNFTs
         }
@@ -636,11 +617,10 @@ pub contract KOTD: NonFungibleToken {
     // Contract-level function definitions
     // -----------------------------------------------------------------------
     
-        // createEmptyCollection creates a new, empty Collection object so that
+    // createEmptyCollection creates a new, empty Collection object so that
     // a user can store it in their account storage.
     // Once they have a Collection in their storage, they are able to receive
     // Collectibles in transactions.
-    //
     pub fun createEmptyCollection(): @NonFungibleToken.Collection {
         return <-create KOTD.Collection()
     }

@@ -1,6 +1,6 @@
 import KOTD from 0x9f3e19cda04154fc
 
-// This script returns an array of the play IDs that are
+// This script returns an array of the CollectibleItem IDs that are
 // in the specified set
 
 // Parameters:
