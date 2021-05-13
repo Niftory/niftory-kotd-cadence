@@ -22,7 +22,7 @@
     flow transactions send --code=./transactions/admin/add_collectible_item_to_set.cdc --signer testnet-account --host access.testnet.nodes.onflow.org:9000 --results --args '[{"type": "UInt32","value": "1"}, {"type": "UInt32","value": "2"}]'
 
 ##### Batch Mint Collectible NFTs
-    flow transactions send --code=./transactions/admin/mint_collectibles_bulk.cdc --signer testnet-account --host access.testnet.nodes.onflow.org:9000 --results --args '[{"type": "UInt32","value": "1"}, {"type": "UInt32","value": "2"}, {"type": "UInt64","value": "10"}]'
+    flow transactions send ./cadence/transactions/admin/mint_collectibles_bulk.cdc --signer testnet-account --host access.testnet.nodes.onflow.org:9000 --results --args '[{"type": "UInt32","value": "1"}, {"type": "UInt32","value": "2"}, {"type": "UInt64","value": "10"}]'
 
 ##### Get Collectible IDs in a Collection
     flow scripts execute --code=./scripts/get_collection_collectible_ids.cdc --host access.testnet.nodes.onflow.org:9000 --args '[{"type": "Address","value": "0x9f3e19cda04154fc"}]'
@@ -34,4 +34,4 @@
     flow scripts execute --code=./scripts/get_collectible_serial_number.cdc --host access.testnet.nodes.onflow.org:9000 --args '[{"type": "Address","value": "0x9f3e19cda04154fc"}, {"type": "UInt64","value": "8"}]'
 
 ##### Get the Edition Size for an Edition (Set + CollectibleItem)
-    flow scripts execute --code=./scripts/get_edition_size.cdc --host access.testnet.nodes.onflow.org:9000 --args '[{"type": "UInt32","value": "1"}, {"type": "UInt32","value": "2"}]'
+    flow scripts execute ./cadence/scripts/get_edition_size.cdc --host access.testnet.nodes.onflow.org:9000 --args-json '[{"type": "UInt32","value": "1"}, {"type": "UInt32","value": "2"}]'
