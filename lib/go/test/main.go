@@ -24,7 +24,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"example.com/go-tests/examples"
 	"github.com/onflow/flow-go-sdk"
 	"github.com/onflow/flow-go-sdk/client"
 	"github.com/onflow/flow-go-sdk/crypto"
@@ -38,17 +37,17 @@ func main() {
 func CreateAccountDemo() {
 	ctx := context.Background()
 	flowClient, err := client.New("127.0.0.1:3569", grpc.WithInsecure())
-	examples.Handle(err)
+	Handle(err)
 
-	serviceAcctAddr, serviceAcctKey, serviceSigner := examples.ServiceAccount(flowClient)
+	serviceAcctAddr, serviceAcctKey, serviceSigner := ServiceAccount(flowClient)
 
-	myPrivateKey := examples.RandomPrivateKey()
+	myPrivateKey := RandomPrivateKey()
 	myAcctKey := flow.NewAccountKey().
 		FromPrivateKey(myPrivateKey).
 		SetHashAlgo(crypto.SHA3_256).
 		SetWeight(flow.AccountKeyWeightThreshold)
 
-	referenceBlockID := examples.GetReferenceBlockId(flowClient)
+	referenceBlockID := GetReferenceBlockId(flowClient)
 	createAccountTx := templates.CreateAccount([]*flow.AccountKey{myAcctKey}, nil, serviceAcctAddr)
 	createAccountTx.SetProposalKey(
 		serviceAcctAddr,
@@ -61,13 +60,13 @@ func CreateAccountDemo() {
 	// Sign the transaction with the service account, which already exists
 	// All new accounts must be created by an existing account
 	err = createAccountTx.SignEnvelope(serviceAcctAddr, serviceAcctKey.Index, serviceSigner)
-	examples.Handle(err)
+	Handle(err)
 
 	// Send the transaction to the network
 	err = flowClient.SendTransaction(ctx, *createAccountTx)
-	examples.Handle(err)
+	Handle(err)
 
-	accountCreationTxRes := examples.WaitForSeal(ctx, flowClient, createAccountTx.ID())
+	accountCreationTxRes := WaitForSeal(ctx, flowClient, createAccountTx.ID())
 
 	var myAddress flow.Address
 
