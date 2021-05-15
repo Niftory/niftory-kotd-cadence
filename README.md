@@ -55,8 +55,8 @@ You're now setup to run any desired commands against testnet.
 #### Update deployed contract
     flow project deploy --network=testnet --update
 
-    | :bulb: Only certain changes to a contract can be deployed via --update. |
-    |-------------------------------------------------------------------------|
+| :bulb: Only certain changes to a contract can be deployed via --update. |
+|-------------------------------------------------------------------------|
 
 ##### Create Set
     flow transactions send ./cadence/transactions/admin/create_set.cdc --signer testnet-account --host access.testnet.nodes.onflow.org:9000 --results --args-json '[{"type": "String","value": "Test Set 001"}]'
