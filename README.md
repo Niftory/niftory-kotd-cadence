@@ -1,7 +1,32 @@
 # niftory-cadence
 
-##### Deploy
+## Get Started 
+1. Install the Flow CLI
+Before you start, install the Flow command-line interface (CLI).
+
+⚠️ This project requires flow-cli v0.15.0 or above.
+
+2. Create a Flow Testnet account
+You'll need a Testnet account to work on this project. Here's how to make one:
+
+Generate a key pair
+Generate a new key pair with the Flow CLI:
+
+    flow keys generate
+⚠️ Make sure to save these keys in a safe place, you'll need them later.
+
+Create your account
+Go to the Flow Testnet Faucet to create a new account. Use the public key from the previous step.
+
+Save your keys
+After your account has been created, save the address and private key in the .env file:
+
+    # Set up flow.json file
+
+## Deploy
     flow project deploy --network=testnet --update
+
+## Run scripts and transactions
 
 ##### Create Set
     flow transactions send --code=./transactions/admin/create_set.cdc --signer testnet-account --host access.testnet.nodes.onflow.org:9000 --results --args '[{"type": "String","value": "Test Set 001"}]'
