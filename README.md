@@ -12,16 +12,22 @@
 2. Set up your testing flow.json file, per the example.flow.json in the lib/go/test directory.
 3. Start a shell window in this directory and run:
 
+    ```
     flow emulator -v
-
+    ```
+    
 4. In a different shell tab, run:
-
+    
+    ```
     go run .
+    ```
 
 ## Getting Started: General Cadence Testnet Operations
 
 1. Generate a key pair with the Flow CLI:
+    ```
     flow keys generate
+    ```
 
 ⚠️ Make sure to save these keys in a safe place, you'll need them later
 
@@ -35,6 +41,7 @@ You're now setup to run any desired commands against testnet.
 ⚠️ Contracts are already deployed to testnet - you'll generally only need to run scripts and transactions.
 
 #### Deploy contract 
+    
     flow project deploy --network=testnet
 
 #### Update deployed contract
