@@ -1,10 +1,9 @@
 # niftory-cadence
 
 ## Getting Started: General
-1. Install the Flow CLI
-Before you start, install the Flow command-line interface (CLI).
-
 ⚠️ This project last tested on Flow CLI v0.20.2.
+
+1. Install the Flow CLI
 
 ## Getting Started: Working on Tests
 ⚠️ Cadence tests are expected to run against the local emulator.  
@@ -12,8 +11,11 @@ Before you start, install the Flow command-line interface (CLI).
 1. Navigate to the lib/go/test path.
 2. Set up your testing flow.json file, per the example.flow.json in the lib/go/test directory.
 3. Start a shell window in this directory and run:
+
     flow emulator -v
+
 4. In a different shell tab, run:
+
     go run .
 
 ## Getting Started: General Cadence Testnet Operations
@@ -30,6 +32,8 @@ Before you start, install the Flow command-line interface (CLI).
 You're now setup to run any desired commands against testnet.
 
 ## Common Commands
+⚠️ Contracts are already deployed to testnet - you'll generally only need to run scripts and transactions.
+
 #### Deploy contract 
     flow project deploy --network=testnet
 
