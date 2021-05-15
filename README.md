@@ -1,7 +1,8 @@
 # niftory-cadence
 
 ## Getting Started: General
-⚠️ This project last tested on Flow CLI v0.20.2.
+| :exclamation:  This project last tested on Flow CLI v0.20.2. |
+|--------------------------------------------------------------|
 
 1. Install the Flow CLI
 
@@ -15,7 +16,7 @@
     ```
     flow emulator -v
     ```
-    
+
 4. In a different shell tab, run:
     
     ```
