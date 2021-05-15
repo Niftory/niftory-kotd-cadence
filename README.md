@@ -55,8 +55,8 @@ You're now setup to run any desired commands against testnet.
 #### Update deployed contract
     flow project deploy --network=testnet --update
 
-| :bulb: Only certain changes to a contract can be deployed via --update.  Changing resource data requires a full re-deployment. |
-|---------------------------------------------------------------------------------------------------------------|
+| :bulb: Only certain changes to a contract can be deployed via --update.  Changing data requires re-deployment. |
+|----------------------------------------------------------------------------------------------------------------|
 
 
 ##### Create Set
