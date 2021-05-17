@@ -15,7 +15,7 @@
 |-----------------------------------------------------------------------------|
 
 1. Navigate to the lib/go/test path.
-2. Set up your testing flow.json file, per the example.flow.json in the lib/go/test directory.
+2. Set up your testing flow.json file, per the example.flow.json in the root directory.
 3. Start a shell window in this directory and run:
 
     ```
