@@ -21,12 +21,20 @@
     ```
     flow emulator -v
     ```
+4. Open another shell window and run the following commands: 
 
-4. In a different shell tab, run:
+#### Deploy contract to emulator
     
-    ```
-    go run .
-    ```
+    flow project deploy --network=emulator
+
+#### Update deployed contract
+    flow project deploy --network=emulator --update
+    
+#### Run Tests
+    npm run test
+
+    | :zap: These next areas are focused on testnet, not the local emulator. |
+    |-----------------------------------------------------------------------------|
 
 ## Getting Started: General Cadence Testnet Operations
 
