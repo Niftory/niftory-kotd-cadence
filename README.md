@@ -21,21 +21,22 @@
     ```
     flow emulator -v
     ```
-4. Open another shell window and run the following commands: 
-
-#### Deploy contract to emulator
-    
+4. Open another shell window and run the following command to deploy your contracts:
+    ```
     flow project deploy --network=emulator
+    ```
+5. Run your tests
 
-#### Update deployed contract
-    flow project deploy --network=emulator --update
-    
-#### Run Tests
+    ```
     npm run test
+    ```
 
-    | :zap: These next areas are focused on testnet, not the local emulator. |
-    |-----------------------------------------------------------------------------|
+#### In order to update a deployed contract, restart your emulator. You _can_ try the following command:
 
+    flow project deploy --network=emulator --update
+   
+| :zap: These next areas are focused on testnet, not the local emulator. |
+|-----------------------------------------------------------------------------|
 ## Getting Started: General Cadence Testnet Operations
 
 1. Generate a key pair with the Flow CLI:
