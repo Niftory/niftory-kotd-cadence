@@ -1,4 +1,4 @@
-import KOTD from 0x9f3e19cda04154fc
+import KOTD from "../contracts/KOTD.cdc"
 
 // This script returns the number of specified Collectibles that have been
 // minted for the specified edition

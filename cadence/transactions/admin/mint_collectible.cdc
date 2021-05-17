@@ -1,4 +1,4 @@
-import KOTD from 0x9f3e19cda04154fc
+import KOTD from "../../contracts/KOTD.cdc"
 
 // This transaction is what an admin would use to mint a single new collectibleItem
 // and deposit it in a user's collection

@@ -1,4 +1,4 @@
-import KOTD from 0x9f3e19cda04154fc
+import KOTD from "../../contracts/KOTD.cdc"
 
 // This transaction creates a new play struct 
 // and stores it in the Top Shot smart contract

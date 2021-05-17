@@ -1,24 +1,20 @@
-import path from "path";
-import { init, getAccountAddress } from "flow-js-testing/dist";
+const path = require("path");
+const { init, getAccountAddress } = require("flow-js-testing/dist");
+const config = require("../config.js");
 
-const basePath = path.resolve(__dirname, "../cadence");
+init(path.resolve(__dirname, "../cadence"));
 
-beforeAll(() => {
-  init(basePath);
-});
-
-describe("Accounts", () => {
-  test("Create Accounts", async () => {
+test("Create Accounts", async () => {
     const Alice = await getAccountAddress("Alice");
     const Bob = await getAccountAddress("Bob");
     const Charlie = await getAccountAddress("Charlie");
     const Dave = await getAccountAddress("Dave");
 
-    console.log("Four accounts were created with following addresses:\n", {
-      Alice,
-      Bob,
-      Charlie,
-      Dave,
-    });
-  });
+    console.log(
+        "Four accounts were created with following addresses"
+    );
+    console.log("Alice:", Alice);
+    console.log("Bob:", Bob);
+    console.log("Charlie:", Charlie);
+    console.log("Dave:", Dave);
 });
