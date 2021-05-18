@@ -1,4 +1,4 @@
-import KOTD from 0x9f3e19cda04154fc
+import KOTD from "../contracts/KOTD.cdc"
 
 // This is the script to get a list of all the Collectibles' serials an account owns
 // Just change the argument to `getAccount` to whatever account you want

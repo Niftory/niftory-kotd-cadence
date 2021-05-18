@@ -1,4 +1,4 @@
-import KOTD from 0x9f3e19cda04154fc
+import KOTD from "../contracts/KOTD.cdc"
 
 // This script gets the serial number of a Collectible
 // by borrowing a reference to the Collectible 

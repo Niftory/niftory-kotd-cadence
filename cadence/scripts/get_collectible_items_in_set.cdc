@@ -1,4 +1,4 @@
-import KOTD from 0x9f3e19cda04154fc
+import KOTD from "../contracts/KOTD.cdc"
 
 // This script returns an array of the CollectibleItem IDs that are
 // in the specified set

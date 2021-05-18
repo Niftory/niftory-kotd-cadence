@@ -15,19 +15,28 @@
 |-----------------------------------------------------------------------------|
 
 1. Navigate to the lib/go/test path.
-2. Set up your testing flow.json file, per the example.flow.json in the lib/go/test directory.
+2. Set up your testing flow.json and .env files, per the example.flow.json and .env.example in the root directory.
 3. Start a shell window in this directory and run:
 
     ```
     flow emulator -v
     ```
-
-4. In a different shell tab, run:
-    
+4. Open another shell window and run the following command to deploy your contracts:
     ```
-    go run .
+    flow project deploy --network=emulator
+    ```
+5. Run your tests
+
+    ```
+    npm run test
     ```
 
+#### In order to update a deployed contract, restart your emulator. You _can_ try the following command:
+
+    flow project deploy --network=emulator --update
+   
+| :zap: These next areas are focused on testnet, not the local emulator. |
+|-----------------------------------------------------------------------------|
 ## Getting Started: General Cadence Testnet Operations
 
 1. Generate a key pair with the Flow CLI:
