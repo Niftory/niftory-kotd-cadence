@@ -3,8 +3,11 @@
     "test": "jest -i"
   },
   "dependencies": {
+    "@babel/core": "^7.14.3",
+    "@babel/preset-env": "^7.14.2",
     "@onflow/fcl": "^0.0.70",
     "@onflow/types": "^0.0.4",
+    "babel-jest": "^26.6.3",
     "dotenv": "^9.0.2",
     "flow-js-testing": "^0.1.8-beta.0",
     "jest": "^26.6.3",

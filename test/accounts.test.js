@@ -1,8 +1,12 @@
-const path = require("path");
-const { init, getAccountAddress } = require("flow-js-testing/dist");
-const config = require("../config.js");
+import path from "path";
+import { init, getAccountAddress } from "flow-js-testing/dist";
+import config from "../config.js"
 
-init(path.resolve(__dirname, "../cadence"));
+const basePath = path.resolve(__dirname, "../cadence");
+
+beforeAll(() => {
+  init(basePath);
+});
 
 test("Create Accounts", async () => {
     const Alice = await getAccountAddress("Alice");
