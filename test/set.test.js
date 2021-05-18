@@ -35,3 +35,17 @@ test("Get Set", async () => {
         console.log(e);
     }
 });
+
+test("Create collectible item", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const create_collectibe_item = await getTransactionCode({name: "admin/create_collectible_item", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [['New collectibe', FlowString]]
+
+    try {
+        const res = await sendTransaction({ code: create_collectibe_item, args, signers });
+        console.log({ res });
+    } catch (e) {
+        console.log(e);
+    }
+});
