@@ -10,7 +10,7 @@ import KOTD from "../../contracts/KOTD.cdc"
 // quantity: the quantity of Moments to be minted
 // recipientAddr: the Flow address of the account receiving the collection of minted moments
 
-transaction(setID: UInt32, collectibleItemID: UInt32, quantity: UInt64) {
+transaction(setID: UInt32, collectibleItemID: UInt32, quantity: UInt64, recipientAddr: Address) {
 
     // Local variable for the topshot Admin object
     let adminRef: &KOTD.Admin
@@ -30,7 +30,7 @@ transaction(setID: UInt32, collectibleItemID: UInt32, quantity: UInt64) {
         let collection <- setRef.batchMintCollectible(collectibleItemID: collectibleItemID, quantity: quantity)
 
         // Get the account object for the recipient of the minted tokens
-        let recipient = getAccount(0x9f3e19cda04154fc)
+        let recipient = getAccount(recipientAddr)
 
         // get the Collection reference for the receiver
         let receiverRef = recipient.getCapability(/public/CollectibleCollection).borrow<&{KOTD.CollectibleCollectionPublic}>()

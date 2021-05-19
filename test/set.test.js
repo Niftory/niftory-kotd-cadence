@@ -1,5 +1,5 @@
 import path from "path";
-import { String as FlowString, UInt32, Address } from "@onflow/types";
+import { String as FlowString, UInt32, UInt64, Address } from "@onflow/types";
 import { init, getTransactionCode, sendTransaction, getScriptCode, executeScript } from "flow-js-testing/dist";
 import config from "../config.js"
 
@@ -106,6 +106,20 @@ test("Mint collectible to set", async () => {
 
     try {
         const res = await sendTransaction({ code: mint_collectible, args, signers });
+        console.log({ res });
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+test("Mint collectible in bulk", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const mint_collectibles_bulk = await getTransactionCode({name: "admin/mint_collectibles_bulk", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[setId, UInt32], [collectibleId, UInt32], [5, UInt64], [ config["0xAdmin"] , Address]]
+
+    try {
+        const res = await sendTransaction({ code: mint_collectibles_bulk, args, signers });
         console.log({ res });
     } catch (e) {
         console.log(e);
