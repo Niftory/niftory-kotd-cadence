@@ -9,7 +9,7 @@ import KOTD from "../../contracts/KOTD.cdc"
 // collectibleItemID: the ID of a play from which a new collectibleItem is minted
 // recipientAddr: the Flow address of the account receiving the newly minted collectibleItem
 
-transaction(setID: UInt32, collectibleItemID: UInt32) {
+transaction(setID: UInt32, collectibleItemID: UInt32, recipientAddr: Address) {
     // local variable for the admin reference
     let adminRef: &KOTD.Admin
 
@@ -26,7 +26,7 @@ transaction(setID: UInt32, collectibleItemID: UInt32) {
         let collectible <- setRef.mintCollectible(collectibleItemID: collectibleItemID)
 
         // get the public account object for the recipient
-        let recipient = getAccount(0x9f3e19cda04154fc)
+        let recipient = getAccount(recipientAddr)
 
         // get the Collection reference for the receiver
         let receiverRef = recipient.getCapability(/public/CollectibleCollection).borrow<&{KOTD.CollectibleCollectionPublic}>()
