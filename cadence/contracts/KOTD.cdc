@@ -48,9 +48,6 @@ pub contract KOTD: NonFungibleToken {
     // Variable size dictionary of CollectibleItem structs
     access(self) var collectibleItemDatas: {UInt32: CollectibleItem}
 
-    // Variable size dictionary of SetData structs
-    access(self) var setDatas: {UInt32: SetData}
-
     // Variable size dictionary of Set resources
     access(self) var sets: @{UInt32: Set}
 
@@ -115,29 +112,30 @@ pub contract KOTD: NonFungibleToken {
     
     pub struct SetData {
 
-        // Unique ID for the Set
         pub let setID: UInt32
 
-        // Name of the Set
         pub let name: String
 
-        // Series that this Set belongs to.
-        // Series is a concept that indicates a group of Sets through time.
-        // Many Sets can exist at a time, but only one Series.
         pub let series: UInt32
 
-        init(name: String) {
-            pre {
-                name.length > 0: "New Set name cannot be empty"
-            }
-            self.setID = KOTD.nextSetID
-            self.name = name
-            self.series = KOTD.currentSeries
+        pub var collectibleItems: [UInt32]
 
-            // Increment the setID so that it isn't used again
-            KOTD.nextSetID = KOTD.nextSetID + UInt32(1)
+        pub var retired: {UInt32: Bool}
 
-            emit SetCreated(setID: self.setID, series: self.series)
+        pub var locked: Bool
+
+        pub var numberMintedPerCollectibleItem: {UInt32: UInt32}
+
+        init(setID: UInt32) {
+            var referencedSet = &KOTD.sets[setID] as &Set
+
+            self.setID = referencedSet.setID
+            self.name = referencedSet.name
+            self.series = referencedSet.series
+            self.collectibleItems = referencedSet.collectibleItems
+            self.retired = referencedSet.retired
+            self.locked = referencedSet.locked
+            self.numberMintedPerCollectibleItem = referencedSet.numberMintedPerCollectibleItem
         }
     }
 
@@ -164,6 +162,14 @@ pub contract KOTD: NonFungibleToken {
 
         // Unique ID for the set
         pub let setID: UInt32
+
+        // Name of the Set
+        pub let name: String
+
+        // Series that this Set belongs to.
+        // Series is a concept that indicates a group of Sets through time.
+        // Many Sets can exist at a time, but only one Series.
+        pub let series: UInt32
 
         // Array of collectibleItems that are a part of this set.
         // When a collectibleItem is added to the set, its ID gets appended here.
@@ -193,14 +199,21 @@ pub contract KOTD: NonFungibleToken {
         pub var numberMintedPerCollectibleItem: {UInt32: UInt32}
 
         init(name: String) {
+            pre {
+                name.length > 0: "New Set name cannot be empty"
+            }
+
             self.setID = KOTD.nextSetID
+            self.name = name
+            self.series = KOTD.currentSeries
             self.collectibleItems = []
             self.retired = {}
             self.locked = false
             self.numberMintedPerCollectibleItem = {}
 
-            // Create a new SetData for this Set and store it in contract storage
-            KOTD.setDatas[self.setID] = SetData(name: name)
+            KOTD.nextSetID = KOTD.nextSetID + UInt32(1)
+
+            emit SetCreated(setID: self.setID, series: self.series)
         }
 
         // addCollectibleItem adds a collectibleItem to the set
@@ -659,54 +672,6 @@ pub contract KOTD: NonFungibleToken {
         }
     }
 
-    // getSetName returns the name that the specified Set
-    //            is associated with.
-    // 
-    // Parameters: setID: The id of the Set that is being searched
-    //
-    // Returns: The name of the Set
-    pub fun getSetName(setID: UInt32): String? {
-        // Don't force a revert if the setID is invalid
-        return KOTD.setDatas[setID]?.name
-    }
-
-    // getSetSeries returns the series that the specified Set
-    //              is associated with.
-    // 
-    // Parameters: setID: The id of the Set that is being searched
-    //
-    // Returns: The series that the Set belongs to
-    pub fun getSetSeries(setID: UInt32): UInt32? {
-        // Don't force a revert if the setID is invalid
-        return KOTD.setDatas[setID]?.series
-    }
-
-    // getSetIDsByName returns the IDs that the specified Set name
-    //                 is associated with.
-    // 
-    // Parameters: setName: The name of the Set that is being searched
-    //
-    // Returns: An array of the IDs of the Set if it exists, or nil if doesn't
-    pub fun getSetIDsByName(setName: String): [UInt32]? {
-        var setIDs: [UInt32] = []
-
-        // Iterate through all the setDatas and search for the name
-        for setData in KOTD.setDatas.values {
-            if setName == setData.name {
-                // If the name is found, return the ID
-                setIDs.append(setData.setID)
-            }
-        }
-
-        // If the name isn't found, return nil
-        // Don't force a revert if the setName is invalid
-        if setIDs.length == 0 {
-            return nil
-        } else {
-            return setIDs
-        }
-    }
-
     // getCollectibleItemsInSet returns the list of CollectibleItem IDs that are in the Set
     // 
     // Parameters: setID: The id of the Set that is being searched
@@ -794,20 +759,19 @@ pub contract KOTD: NonFungibleToken {
         // Initialize contract fields
         self.currentSeries = 0
         self.collectibleItemDatas = {}
-        self.setDatas = {}
         self.sets <- {}
         self.nextCollectibleItemID = 1
         self.nextSetID = 1
         self.totalSupply = 0
 
         // Put a new Collection in storage @TODO: change to "CollectibleCollection"
-        self.account.save<@Collection>(<- create Collection(), to: /storage/CollectibleCollection002)
+        self.account.save<@Collection>(<- create Collection(), to: /storage/CollectibleCollection003)
 
         // Create a public capability for the Collection
-        self.account.link<&{CollectibleCollectionPublic}>(/public/CollectibleCollection, target: /storage/CollectibleCollection002)
+        self.account.link<&{CollectibleCollectionPublic}>(/public/CollectibleCollection, target: /storage/CollectibleCollection003)
 
         // Put the Minter in storage
-        self.account.save<@Admin>(<- create Admin(), to: /storage/KOTDAdmin002)
+        self.account.save<@Admin>(<- create Admin(), to: /storage/KOTDAdmin003)
 
         emit ContractInitialized()
     }

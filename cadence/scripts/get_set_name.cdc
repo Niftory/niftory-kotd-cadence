@@ -11,8 +11,7 @@ import KOTD from "../contracts/KOTD.cdc"
 
 pub fun main(setID: UInt32): String {
 
-    let name = KOTD.getSetName(setID: setID)
-        ?? panic("Could not find the specified set")
+    let name = KOTD.SetData(setID: setID).name
         
     return name
 }
