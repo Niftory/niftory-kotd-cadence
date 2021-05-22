@@ -43,7 +43,12 @@ pub contract KOTD: NonFungibleToken {
     // Series that this Set belongs to.
     // Series is a concept that indicates a group of Sets through time.
     // Many Sets can exist at a time, but only one series.
-    pub var currentSeries: UInt32
+    
+    //pointer to the current active Series
+    pub var currentSeriesID: UInt32
+
+    //Variable size dictionary of Series structs.
+    access(self) var seriesDatas: {UInt32: Series}
 
     // Variable size dictionary of CollectibleItem structs
     access(self) var collectibleItemDatas: {UInt32: CollectibleItem}
@@ -72,6 +77,35 @@ pub contract KOTD: NonFungibleToken {
     // actual stored values, but an instance (or object) of one of these Types
     // can be created by this contract that contains stored values.
     // -----------------------------------------------------------------------
+    
+    pub struct Series {
+        pub let seriesID: UInt32
+
+        pub let name: String?
+
+        pub let seriesIdentityURL: String?
+
+         init(seriesID: UInt32, name: String?, seriesIdentityURL: String?) {
+            self.seriesID = seriesID
+            self.name = name
+            self.seriesIdentityURL = seriesIdentityURL
+        }
+    }
+
+    pub struct CurrSeriesData {
+        pub let seriesID: UInt32
+
+        pub let name: String?
+
+        pub let seriesIdentityURL: String?
+
+         init() {
+            var referencedSeries = &KOTD.seriesDatas[KOTD.currentSeriesID] as &Series
+            self.seriesID = referencedSeries.seriesID
+            self.name = referencedSeries.name
+            self.seriesIdentityURL = referencedSeries.seriesIdentityURL
+        }
+    }
     
     // CollectibleItem is a Struct that holds metadata associated 
     // with a moment, entity, or other representative collectible.
@@ -116,7 +150,7 @@ pub contract KOTD: NonFungibleToken {
 
         pub let name: String
 
-        pub let series: UInt32
+        pub let series: Series
 
         pub var collectibleItems: [UInt32]
 
@@ -169,7 +203,7 @@ pub contract KOTD: NonFungibleToken {
         // Series that this Set belongs to.
         // Series is a concept that indicates a group of Sets through time.
         // Many Sets can exist at a time, but only one Series.
-        pub let series: UInt32
+        pub let series: Series
 
         // Array of collectibleItems that are a part of this set.
         // When a collectibleItem is added to the set, its ID gets appended here.
@@ -205,7 +239,7 @@ pub contract KOTD: NonFungibleToken {
 
             self.setID = KOTD.nextSetID
             self.name = name
-            self.series = KOTD.currentSeries
+            self.series = KOTD.seriesDatas[KOTD.currentSeriesID]!
             self.collectibleItems = []
             self.retired = {}
             self.locked = false
@@ -213,7 +247,7 @@ pub contract KOTD: NonFungibleToken {
 
             KOTD.nextSetID = KOTD.nextSetID + UInt32(1)
 
-            emit SetCreated(setID: self.setID, series: self.series)
+            emit SetCreated(setID: self.setID, series: self.series.seriesID)
         }
 
         // addCollectibleItem adds a collectibleItem to the set
@@ -429,14 +463,22 @@ pub contract KOTD: NonFungibleToken {
         //
         // Returns: The new series number
         
-        pub fun startNewSeries(): UInt32 {
+        pub fun startNewSeries(name: String?, identityURL: String?): UInt32 {
             // End the current series and start a new one
             // by incrementing the KOTD series number
-            KOTD.currentSeries = KOTD.currentSeries + UInt32(1)
 
-            emit NewSeriesStarted(newCurrentSeries: KOTD.currentSeries)
 
-            return KOTD.currentSeries
+            var newSeries = Series(seriesID: KOTD.currentSeriesID + UInt32(1), name: name, seriesIdentityURL: identityURL)
+
+            KOTD.currentSeriesID = newSeries.seriesID
+
+            //put it in storage
+            KOTD.seriesDatas[KOTD.currentSeriesID] = newSeries
+
+
+            emit NewSeriesStarted(newCurrentSeries: KOTD.currentSeriesID)
+
+            return KOTD.currentSeriesID
         }
 
         // createNewAdmin creates a new Admin resource
@@ -467,7 +509,7 @@ pub contract KOTD: NonFungibleToken {
         }
 
         // If the Collectible is destroyed, emit an event to indicate 
-        // to outside ovbservers that it has been destroyed
+        // to outside observers that it has been destroyed
         destroy() {
             emit CollectibleDestroyed(id: self.id)
         }
@@ -757,7 +799,9 @@ pub contract KOTD: NonFungibleToken {
     
     init() {
         // Initialize contract fields
-        self.currentSeries = 0
+        self.currentSeriesID = 0
+        self.seriesDatas = {}
+        self.seriesDatas[self.currentSeriesID] = (Series(seriesID: KOTD.currentSeriesID, name: nil, seriesIdentityURL: nil))
         self.collectibleItemDatas = {}
         self.sets <- {}
         self.nextCollectibleItemID = 1

@@ -37,6 +37,21 @@ test("Get Set", async () => {
     try {
         const res = await executeScript({ code: get_set_name, args });
         expect(res).toEqual(setName)
+        //console.log(res);
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+test("Get Current Series", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_current_series = await getScriptCode({name: "get_current_series", addressMap})
+    const args = []
+
+    try {
+        const res = await executeScript({ code: get_current_series, args });
+        expect(res.seriesID).toEqual(0)
+        console.log(res);
     } catch (e) {
         console.log(e);
     }
@@ -108,6 +123,7 @@ test("Mint collectible to set", async () => {
     try {
         const txResult = await sendTransaction({ code: mint_collectible, args, signers });
         expect(txResult.status).toEqual(4)
+        console.log(txResult)
     } catch (e) {
         console.log(e);
     }
@@ -122,6 +138,13 @@ test("Mint collectible in bulk", async () => {
     try {
         const txResult = await sendTransaction({ code: mint_collectibles_bulk, args, signers });
         expect(txResult.status).toEqual(4)
+        for (var i = 0; i < txResult.events.length; i++) {
+            if (txResult.events[i].type.includes("KOTD.CollectibleMinted")) {
+                console.log("Minted: " + "{ ID: " + txResult.events[i].data.collectibleID + ", Serial: " + txResult.events[i].data.serialNumber
+                    + ", Collectible Item ID: " + txResult.events[i].data.collectibleItemID
+                    + ", Set ID: " + txResult.events[i].data.setID + "}")
+            }
+        }
     } catch (e) {
         console.log(e);
     }
