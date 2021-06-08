@@ -9,9 +9,7 @@ import KOTD from "../contracts/KOTD.cdc"
 // Returns: String
 // Name of set with specified setID
 
-pub fun main(setID: UInt32): String {
-
-    let name = KOTD.SetData(setID: setID).name
+pub fun main(setID: UInt32): KOTD.SetData {
         
-    return name
+    return KOTD.SetData(setID: setID)
 }
