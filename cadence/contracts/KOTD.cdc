@@ -527,7 +527,7 @@ pub contract KOTD: NonFungibleToken {
     // This is the interface that users can cast their Collectible Collection as
     // to allow others to deposit Collectibles into their Collection. It also allows for reading
     // the IDs of Collectibles in the Collection.
-    pub resource interface CollectibleCollectionPublic {
+    pub resource interface NiftoryCollectibleCollectionPublic {
         pub fun deposit(token: @NonFungibleToken.NFT)
         pub fun batchDeposit(tokens: @NonFungibleToken.Collection)
         pub fun getIDs(): [UInt64]
@@ -544,7 +544,7 @@ pub contract KOTD: NonFungibleToken {
 
     // Collection is a resource that every user who owns NFTs 
     // will store in their account to manage their NFTS
-    pub resource Collection: CollectibleCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic { 
+    pub resource Collection: NiftoryCollectibleCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic { 
         // Dictionary of Collectible conforming tokens
         // NFT is a resource type with a UInt64 ID field
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
@@ -818,15 +818,15 @@ pub contract KOTD: NonFungibleToken {
 
         // initialize paths
         // Set our named paths
-        self.CollectionStoragePath = /storage/CollectibleCollection003
-        self.CollectionPublicPath = /public/CollectibleCollection
+        self.CollectionStoragePath = /storage/NiftoryCollectibleCollection
+        self.CollectionPublicPath = /public/NiftoryCollectibleCollection
         self.AdminStoragePath = /storage/KOTDAdmin003
 
-        // Put a new Collection in storage @TODO: change to "CollectibleCollection"
+        // Put a new Collection in storage 
         self.account.save<@Collection>(<- create Collection(), to: self.CollectionStoragePath)
 
         // Create a public capability for the Collection
-        self.account.link<&{CollectibleCollectionPublic}>(self.CollectionPublicPath, target: self.CollectionStoragePath)
+        self.account.link<&{NiftoryCollectibleCollectionPublic}>(self.CollectionPublicPath, target: self.CollectionStoragePath)
 
         // Put the Minter in storage
         self.account.save<@Admin>(<- create Admin(), to: self.AdminStoragePath)

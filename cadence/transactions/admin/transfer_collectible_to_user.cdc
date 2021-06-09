@@ -35,7 +35,7 @@ transaction(recipient: Address, withdrawID: UInt64) {
         let recipient = getAccount(recipient)
 
         // get the Collection reference for the receiver
-        let receiverRef = recipient.getCapability(KOTD.CollectionPublicPath).borrow<&{KOTD.CollectibleCollectionPublic}>()
+        let receiverRef = recipient.getCapability(KOTD.CollectionPublicPath).borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()
             ?? panic("Cannot borrow a reference to the recipient's collectible collection")
 
 
