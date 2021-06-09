@@ -1,5 +1,5 @@
 import path from "path";
-import { String as FlowString, UInt32, UInt64, Address } from "@onflow/types";
+import { String as FlowString, UInt32, UInt64, Address, Optional, String } from "@onflow/types";
 import { init, getAccountAddress, getTransactionCode, sendTransaction, getScriptCode, executeScript } from "flow-js-testing/dist";
 import config from "../config.js"
 
@@ -194,6 +194,28 @@ test("Transfer collectible to user", async () => {
         for (var i = 0; i < txResult.events.length; i++) {
             if (txResult.events[i].type.includes("KOTD.Deposit")) {
                 console.log("Deposited: " + "[ID: " + txResult.events[i].data.id + "] to Address: " + txResult.events[i].data.to)
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+test("Start new series", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const start_new_series = await getTransactionCode({name: "admin/start_new_series", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [["New Series Name", Optional(String)], [null, Optional(String)]]
+
+     
+
+    try {
+        const txResult = await sendTransaction({ code: start_new_series, args, signers });
+        expect(txResult.status).toEqual(4)
+        console.log(txResult)
+        for (var i = 0; i < txResult.events.length; i++) {
+            if (txResult.events[i].type.includes("KOTD.NewSeriesStarted")) {
+                console.log("New Series ID: " + txResult.events[i].data.newCurrentSeries)
             }
         }
     } catch (e) {
