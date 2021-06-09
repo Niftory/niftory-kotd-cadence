@@ -19,7 +19,8 @@ transaction {
             acct.save(<-collection, to: KOTD.CollectionStoragePath)
 
             // create a public capability for the collection
-            acct.link<&KOTD.Collection{NonFungibleToken.CollectionPublic, KOTD.CollectibleCollectionPublic}>(KOTD.CollectionPublicPath, target: KOTD.CollectionStoragePath)
+            acct.link<&{KOTD.CollectibleCollectionPublic}>(KOTD.CollectionPublicPath, target: KOTD.CollectionStoragePath)
+
         }
     }
 }

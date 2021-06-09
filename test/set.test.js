@@ -190,6 +190,11 @@ test("Transfer collectible to user", async () => {
         const txResult = await sendTransaction({ code: transfer_collectible_to_user, args, signers });
         expect(txResult.status).toEqual(4)
         console.log(txResult)
+        for (var i = 0; i < txResult.events.length; i++) {
+            if (txResult.events[i].type.includes("KOTD.Deposit")) {
+                console.log("Deposited: " + "[ID: " + txResult.events[i].data.id + "] to Address: " + txResult.events[i].data.to)
+            }
+        }
     } catch (e) {
         console.log(e);
     }
