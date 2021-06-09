@@ -22,7 +22,7 @@ transaction(recipient: Address, withdrawID: UInt64) {
         let recipient = getAccount(recipient)
 
         // borrow a reference to the signer's NFT collection
-        let collectionRef = signer.borrow<&KOTD.Collection>(from: /storage/CollectibleCollection003)
+        let collectionRef = signer.borrow<&KOTD.Collection>(from: KOTD.CollectionStoragePath)
             ?? panic("Could not borrow a reference to the owner's collection")
 
         // borrow a public reference to the receivers collection
