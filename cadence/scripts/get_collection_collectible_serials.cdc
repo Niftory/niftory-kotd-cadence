@@ -16,8 +16,8 @@ pub fun main(account: Address): [UInt32] {
 
     let acct = getAccount(account)
 
-    let collectionRef = acct.getCapability(/public/CollectibleCollection)
-                            .borrow<&{KOTD.CollectibleCollectionPublic}>()!
+    let collectionRef = acct.getCapability(/public/NiftoryCollectibleCollection)
+                            .borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()!
 
     log(collectionRef.getIDs())
 

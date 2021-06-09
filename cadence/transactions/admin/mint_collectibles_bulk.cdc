@@ -33,7 +33,7 @@ transaction(setID: UInt32, collectibleItemID: UInt32, quantity: UInt64, recipien
         let recipient = getAccount(recipientAddr)
 
         // get the Collection reference for the receiver
-        let receiverRef = recipient.getCapability(/public/CollectibleCollection).borrow<&{KOTD.CollectibleCollectionPublic}>()
+        let receiverRef = recipient.getCapability(/public/NiftoryCollectibleCollection).borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()
             ?? panic("Cannot borrow a reference to the recipient's collection")
 
         // deposit the NFT in the receivers collection
