@@ -178,7 +178,7 @@ test("Set up account", async () => {
 });
 
 test("Transfer collectible to user", async () => {
-    const addressMap = {KOTD: config["0xAdmin"]};
+    const addressMap = {NonFungibleToken: config["0xAdmin"], KOTD: config["0xAdmin"]};
     const transfer_collectible_to_user = await getTransactionCode({name: "admin/transfer_collectible_to_user", addressMap}) 
     const signers = [config["0xAdmin"]]
     const withdrawId = collectibleId

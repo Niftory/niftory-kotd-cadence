@@ -19,7 +19,7 @@ transaction {
             acct.save(<-collection, to: /storage/CollectibleCollection003)
 
             // create a public capability for the collection
-            acct.link<&{KOTD.CollectibleCollectionPublic}>(/public/CollectibleCollection003, target: /storage/CollectibleCollection003)
+            acct.link<&{KOTD.CollectibleCollectionPublic}>(/public/CollectibleCollection, target: /storage/CollectibleCollection003)
         }
     }
 }
