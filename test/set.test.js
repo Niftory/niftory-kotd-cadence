@@ -163,7 +163,7 @@ test("Create recipient account", async () => {
 
 
 test("Set up account", async () => {
-    const addressMap = {KOTD: config["0xAdmin"]};
+    const addressMap = {NonFungibleToken: config["0xAdmin"], KOTD: config["0xAdmin"]};
     const setup_account = await getTransactionCode({name: "admin/setup_account", addressMap}) 
     const signers = [recipientAddress]
     const args = []
@@ -189,6 +189,7 @@ test("Transfer collectible to user", async () => {
     try {
         const txResult = await sendTransaction({ code: transfer_collectible_to_user, args, signers });
         expect(txResult.status).toEqual(4)
+        console.log(txResult)
     } catch (e) {
         console.log(e);
     }

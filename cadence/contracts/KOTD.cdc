@@ -3,6 +3,14 @@ import NonFungibleToken from "./NonFungibleToken.cdc"
 pub contract KOTD: NonFungibleToken {
 
     // -----------------------------------------------------------------------
+    // Public Paths
+    // -----------------------------------------------------------------------
+
+    pub let CollectionStoragePath: StoragePath
+    pub let CollectionPublicPath: PublicPath
+    pub let AdminStoragePath: StoragePath
+    
+    // -----------------------------------------------------------------------
     // Contract Events
     // -----------------------------------------------------------------------
     pub event ContractInitialized()
@@ -808,14 +816,20 @@ pub contract KOTD: NonFungibleToken {
         self.nextSetID = 1
         self.totalSupply = 0
 
+        // initialize paths
+        // Set our named paths
+        self.CollectionStoragePath = /storage/CollectibleCollection003
+        self.CollectionPublicPath = /public/CollectibleCollection
+        self.AdminStoragePath = /storage/KOTDAdmin003
+
         // Put a new Collection in storage @TODO: change to "CollectibleCollection"
-        self.account.save<@Collection>(<- create Collection(), to: /storage/CollectibleCollection003)
+        self.account.save<@Collection>(<- create Collection(), to: self.CollectionStoragePath)
 
         // Create a public capability for the Collection
-        self.account.link<&{CollectibleCollectionPublic}>(/public/CollectibleCollection, target: /storage/CollectibleCollection003)
+        self.account.link<&{CollectibleCollectionPublic}>(self.CollectionPublicPath, target: self.CollectionStoragePath)
 
         // Put the Minter in storage
-        self.account.save<@Admin>(<- create Admin(), to: /storage/KOTDAdmin003)
+        self.account.save<@Admin>(<- create Admin(), to: self.AdminStoragePath)
 
         emit ContractInitialized()
     }
