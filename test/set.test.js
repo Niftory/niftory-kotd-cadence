@@ -15,6 +15,7 @@ let collectibleItemId = ''
 let collectibleTitle = 'New collectible'
 let collectibleId = ''
 let recipientAddress = ''
+let bulkCollectibleIDs = []
 
 test("Create Set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
@@ -162,6 +163,8 @@ test("Mint collectible in bulk", async () => {
         expect(txResult.status).toEqual(4)
         for (var i = 0; i < txResult.events.length; i++) {
             if (txResult.events[i].type.includes("KOTD.CollectibleMinted")) {
+                bulkCollectibleIDs.push(txResult.events[i].data.collectibleID)
+
                 console.log("Minted: " + "{ ID: " + txResult.events[i].data.collectibleID + ", Serial: " + txResult.events[i].data.serialNumber
                     + ", Collectible Item ID: " + txResult.events[i].data.collectibleItemID
                     + ", Set ID: " + txResult.events[i].data.setID + "}")
@@ -204,6 +207,28 @@ test("Transfer collectible to user", async () => {
 
     try {
         const txResult = await sendTransaction({ code: transfer_collectible_to_user, args, signers });
+        expect(txResult.status).toEqual(4)
+        console.log(txResult)
+        for (var i = 0; i < txResult.events.length; i++) {
+            if (txResult.events[i].type.includes("KOTD.Deposit")) {
+                console.log("Deposited: " + "[ID: " + txResult.events[i].data.id + "] to Address: " + txResult.events[i].data.to)
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+test("Bulk transfer collectible to user", async () => {
+    const addressMap = {NonFungibleToken: config["0xAdmin"], KOTD: config["0xAdmin"]};
+    const batch_transfer_collectible_to_user = await getTransactionCode({name: "admin/batch_transfer_collectible_to_user", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const recipient = recipientAddress
+    const args = [[recipient , Address], [bulkCollectibleIDs, Array(UInt64)]]
+    console.log(args)
+
+    try {
+        const txResult = await sendTransaction({ code: batch_transfer_collectible_to_user, args, signers });
         expect(txResult.status).toEqual(4)
         console.log(txResult)
         for (var i = 0; i < txResult.events.length; i++) {
