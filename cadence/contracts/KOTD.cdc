@@ -491,7 +491,17 @@ pub contract KOTD: NonFungibleToken {
         pub fun startNewSeries(name: String?, identityURL: String?): UInt32 {
             // End the current series and start a new one
             // by incrementing the KOTD series number
+            let setIDs = KOTD.sets.keys 
 
+            var i: Int = 0
+            while (i < setIDs.length) {
+                var currSet = SetData(setID: setIDs[i])
+                if (currSet.series.seriesID == KOTD.currentSeriesID) {
+                    self.borrowSet(setID: setIDs[i]).retireAll()
+                    self.borrowSet(setID: setIDs[i]).lock()
+                }
+                i = i + 1;
+            }      
 
             var newSeries = Series(seriesID: KOTD.currentSeriesID + UInt32(1), name: name, seriesIdentityURL: identityURL)
 
@@ -499,6 +509,8 @@ pub contract KOTD: NonFungibleToken {
 
             //put it in storage
             KOTD.seriesDatas[KOTD.currentSeriesID] = newSeries
+
+            
 
 
             emit NewSeriesStarted(newCurrentSeries: KOTD.currentSeriesID)

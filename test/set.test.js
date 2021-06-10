@@ -237,3 +237,22 @@ test("Start new series", async () => {
         console.log(e);
     }
 });
+
+test("Mint collectible to retired set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const mint_collectible = await getTransactionCode({name: "admin/mint_collectible", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[setId, UInt32], [collectibleItemId, UInt32], [config["0xAdmin"] , Address]]
+
+    try {
+        const txResult = await sendTransaction({ code: mint_collectible, args, signers });
+        expect(txResult.status).toEqual(4)
+        console.log("Minted: " + "{ ID: " + txResult.events[0].data.collectibleID + ", Serial: " + txResult.events[0].data.serialNumber
+            + ", Collectible Item ID: " + txResult.events[0].data.collectibleItemID
+            + ", Set ID: " + txResult.events[0].data.setID + "}")        
+        
+        collectibleId = txResult.events[0].data.collectibleID
+    } catch (e) {
+        console.log(e);
+    }
+});
