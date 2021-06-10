@@ -126,16 +126,20 @@ pub contract KOTD: NonFungibleToken {
         // The unique ID for the CollectibleItem
         pub let collectibleItemID: UInt32
 
+        //array of strings to capture names of any featured artists.  Could be used as keys for a royalty structure in a future marketplace.
+        pub let featuredArtists: [String]
+
         // Stores all the metadata about the CollectibleItem as a string mapping
         
         pub let metadata: {String: String}
 
-        init(metadata: {String: String}) {
+        init(metadata: {String: String}, featuredArtists: [String]) {
             pre {
                 metadata.length != 0: "New CollectibleItem metadata cannot be empty"
             }
             self.collectibleItemID = KOTD.nextCollectibleItemID
             self.metadata = metadata
+            self.featuredArtists = featuredArtists
 
             // Increment the ID so that it isn't used again
             KOTD.nextCollectibleItemID = KOTD.nextCollectibleItemID + UInt32(1)
@@ -435,9 +439,9 @@ pub contract KOTD: NonFungibleToken {
         //
         // Returns: the ID of the new CollectibleItem object
 
-        pub fun createCollectibleItem(metadata: {String: String}): UInt32 {
+        pub fun createCollectibleItem(metadata: {String: String}, featuredArtists: [String]): UInt32 {
             // Create the new CollectibleItem
-            var newCollectibleItem = CollectibleItem(metadata: metadata)
+            var newCollectibleItem = CollectibleItem(metadata: metadata, featuredArtists: featuredArtists)
             let newID = newCollectibleItem.collectibleItemID
 
             // Store it in the contract storage
@@ -715,6 +719,15 @@ pub contract KOTD: NonFungibleToken {
     // Returns: The metadata as a String to String mapping optional
     pub fun getCollectibleItemMetaData(collectibleItemID: UInt32): {String: String}? {
         return self.collectibleItemDatas[collectibleItemID]?.metadata
+    }
+
+    // getCollectibleItemMetaData returns all the metadata associated with a specific CollectibleItem
+    // 
+    // Parameters: collectibleItemID: The id of the CollectibleItem that is being searched
+    //
+    // Returns: The metadata as a String to String mapping optional
+    pub fun getCollectibleItemFeaturedArtists(collectibleItemID: UInt32): [String]? {
+        return self.collectibleItemDatas[collectibleItemID]?.featuredArtists
     }
 
     // getCollectibleItemMetaDataByField returns the metadata associated with a 

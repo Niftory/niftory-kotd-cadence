@@ -1,5 +1,5 @@
 import path from "path";
-import { String as FlowString, UInt32, UInt64, Address, Optional, String } from "@onflow/types";
+import { String as FlowString, UInt32, UInt64, Address, Optional, String, Array } from "@onflow/types";
 import { init, getAccountAddress, getTransactionCode, sendTransaction, getScriptCode, executeScript } from "flow-js-testing/dist";
 import config from "../config.js"
 
@@ -64,7 +64,7 @@ test("Create collectible item", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const create_collectibe_item = await getTransactionCode({name: "admin/create_collectible_item", addressMap}) 
     const signers = [config["0xAdmin"]]
-    const args = [[collectibleTitle, FlowString]]
+    const args = [[collectibleTitle, FlowString], [["Artist 1", "Artist 2"], Array(String)]]
 
     try {
         const txResult = await sendTransaction({ code: create_collectibe_item, args, signers });
@@ -84,6 +84,21 @@ test("Get collectible item meta data", async () => {
     try {
         const res = await executeScript({ code: get_collectible_item_metadata, args, signers });
         expect(res.title).toEqual(collectibleTitle)
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+test("Get collectible item featured artists", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_collectible_item_artists = await getScriptCode({name: "get_collectible_item_artists", addressMap})
+    const signers = [config["0xAdmin"]]
+    const args = [[collectibleItemId, UInt32]]
+
+    try {
+        const res = await executeScript({ code: get_collectible_item_artists, args, signers });
+        console.log(res)
+        expect(res[0]).toEqual("Artist 1")
     } catch (e) {
         console.log(e);
     }

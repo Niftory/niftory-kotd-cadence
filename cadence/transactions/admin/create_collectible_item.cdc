@@ -9,7 +9,7 @@ import KOTD from "../../contracts/KOTD.cdc"
 //
 // metadata: A dictionary of all the play metadata associated
 
-transaction(metaDataTitle: String) {
+transaction(metaDataTitle: String, featuredArtists: [String]) {
 
     // Local variable for the topshot Admin object
     let adminRef: &KOTD.Admin
@@ -29,7 +29,7 @@ transaction(metaDataTitle: String) {
 
     execute {
        // Create a play with the specified metadata
-        self.adminRef.createCollectibleItem(metadata: self.metadata)
+        self.adminRef.createCollectibleItem(metadata: self.metadata, featuredArtists: featuredArtists)
     }
 
     post {
