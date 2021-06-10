@@ -33,12 +33,12 @@ test("Create Set", async () => {
 
 test("Get Set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
-    const get_set_name = await getScriptCode({name: "get_set_data", addressMap})
+    const get_set_data = await getScriptCode({name: "get_set_data", addressMap})
     const args = [[setId, UInt32]]
 
     try {
-        const res = await executeScript({ code: get_set_name, args });
-        console.log("Get Set Test | Set Name: " + res.name);
+        const res = await executeScript({ code: get_set_data, args });
+        console.log("Get Set Test | Set Name: " + res.name + " | Set Identity URL: " + res.setIdentityURL + " Set Description: " + res.description);
         expect(res.name).toEqual(setName)
         
     } catch (e) {
