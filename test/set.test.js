@@ -20,7 +20,7 @@ test("Create Set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const create_set = await getTransactionCode({name: "admin/create_set", addressMap}) 
     const signers = [config["0xAdmin"]]
-    const args = [[setName, FlowString]]
+    const args = [[setName, FlowString], ["New Set URL", Optional(String)], ["Set Description Lorem Ipsum.", Optional(String)]]
 
     try {
         const txResult = await sendTransaction({ code: create_set, args, signers });

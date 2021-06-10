@@ -7,7 +7,7 @@ import KOTD from "../../contracts/KOTD.cdc"
 //
 // setName: the name of a new Set to be created
 
-transaction(setName: String) {
+transaction(setName: String, setIdentityURL: String?, description: String?) {
     
     // Local variable for the Admin object
     let adminRef: &KOTD.Admin
@@ -24,7 +24,7 @@ transaction(setName: String) {
     execute {
         
         // Create a set with the specified name
-        self.adminRef.createSet(name: setName)
+        self.adminRef.createSet(name: setName, setIdentityURL: setIdentityURL, description: description)
     }
 
     post {

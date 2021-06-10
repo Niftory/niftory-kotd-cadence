@@ -158,6 +158,10 @@ pub contract KOTD: NonFungibleToken {
 
         pub let name: String
 
+        pub let setIdentityURL: String?
+
+        pub let description: String?
+
         pub let series: Series
 
         pub var collectibleItems: [UInt32]
@@ -173,6 +177,8 @@ pub contract KOTD: NonFungibleToken {
 
             self.setID = referencedSet.setID
             self.name = referencedSet.name
+            self.setIdentityURL = referencedSet.setIdentityURL
+            self.description = referencedSet.description
             self.series = referencedSet.series
             self.collectibleItems = referencedSet.collectibleItems
             self.retired = referencedSet.retired
@@ -213,6 +219,11 @@ pub contract KOTD: NonFungibleToken {
         // Many Sets can exist at a time, but only one Series.
         pub let series: Series
 
+        // Optional string to hold URL for an identity visual associated with a Set.
+        pub let setIdentityURL: String?
+
+        pub let description: String?
+
         // Array of collectibleItems that are a part of this set.
         // When a collectibleItem is added to the set, its ID gets appended here.
         // The ID does not get removed from this array when a CollectibleItem is retired.
@@ -240,13 +251,15 @@ pub contract KOTD: NonFungibleToken {
         // show its place in the Set, eg. 13 of 60.
         pub var numberMintedPerCollectibleItem: {UInt32: UInt32}
 
-        init(name: String) {
+        init(name: String, setIdentityURL: String?, description: String?) {
             pre {
                 name.length > 0: "New Set name cannot be empty"
             }
 
             self.setID = KOTD.nextSetID
             self.name = name
+            self.setIdentityURL = setIdentityURL
+            self.description = description
             self.series = KOTD.seriesDatas[KOTD.currentSeriesID]!
             self.collectibleItems = []
             self.retired = {}
@@ -438,9 +451,9 @@ pub contract KOTD: NonFungibleToken {
         //
         // Parameters: name: The name of the Set
         
-        pub fun createSet(name: String) {
+        pub fun createSet(name: String, setIdentityURL: String?, description: String?) {
             // Create the new Set
-            var newSet <- create Set(name: name)
+            var newSet <- create Set(name: name, setIdentityURL: setIdentityURL, description: description)
 
             // Store it in the sets mapping field
             KOTD.sets[newSet.setID] <-! newSet
