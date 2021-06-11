@@ -235,6 +235,8 @@ test("Get number of collectibles in an edition", async () => {
     }
 });
 
+
+
 test("Create recipient account", async () => {
     //expect.assertions(1);
 
@@ -317,6 +319,23 @@ test("Bulk transfer collectibles to user", async () => {
         console.log(e);
         expect(e).not.toBeDefined()
 
+    }
+});
+
+test("Get Series for a Collectible", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_collectible_series = await getScriptCode({name: "get_collectible_series", addressMap})
+    const signers = [config["0xAdmin"]]
+    const args = [[recipientAddress, Address], [collectibleId, UInt64]]
+    expect.assertions(1);
+
+    try {
+        const res = await executeScript({ code: get_collectible_series, args, signers });
+        console.log(res)
+        expect(res.seriesID).toEqual(0)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
     }
 });
 
