@@ -5,9 +5,9 @@ import KOTD from "../../contracts/KOTD.cdc"
 
 // Parameters:
 //
-// setID: the ID of a set containing the target play
-// collectibleItemID: the ID of a play from which a new collectibleItem is minted
-// recipientAddr: the Flow address of the account receiving the newly minted collectibleItem
+// setID: the ID of a set containing the target Collectible Item
+// collectibleItemID: the ID of a Collectible Item from which a new Collectible is minted
+// recipientAddr: the Flow address of the account receiving the newly minted Collectible
 
 transaction(setID: UInt32, collectibleItemID: UInt32, recipientAddr: Address) {
     // local variable for the admin reference

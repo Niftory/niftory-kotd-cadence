@@ -1,6 +1,6 @@
 import KOTD from "../contracts/KOTD.cdc"
 
-// This is the script to get a list of all the Collectibles' serials an account owns
+// This is the script to get a list of all the Collectible serials an account owns
 // Just change the argument to `getAccount` to whatever account you want
 // and as long as they have a published Collection receiver, you can see
 // the Collectibles they own.
@@ -9,8 +9,8 @@ import KOTD from "../contracts/KOTD.cdc"
 //
 // account: The Flow Address of the account whose Collectible data needs to be read
 
-// Returns: [UInt64]
-// list of all Collectibles' serials an account owns
+// Returns: [UInt32]
+// list of all Collectible serials an account owns
 
 pub fun main(account: Address): [UInt32] {
 

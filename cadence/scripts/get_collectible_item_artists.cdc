@@ -1,15 +1,15 @@
 import KOTD from "../contracts/KOTD.cdc"
 
-// This script returns the full metadata associated with a CollectibleItem
+// This script returns the full metadata associated with a Collectible Item
 // in the KOTD smart contract
 
 // Parameters:
 //
 // collectibleItemID: The unique ID for the play whose data needs to be read
 
-// Returns: {String:String}
-// A dictionary of all the play metadata associated
-// with the specified collectibleItemID
+// Returns: [String]
+// An array of all the artists featured
+// in the specified Collectible Item
 
 pub fun main(collectibleItemID: UInt32): [String] {
 

@@ -2,18 +2,18 @@ import NonFungibleToken from "../../contracts/NonFungibleToken.cdc"
 import KOTD from "../../contracts/KOTD.cdc"
 
 
-// This transaction transfers a moment to a recipient
+// This transaction transfers a Collectible to a recipient
 
-// This transaction is how a topshot user would transfer a moment
+// This transaction is how a KOTD user would transfer a Collectible
 // from their account to another account
-// The recipient must have a TopShot Collection object stored
-// and a public MomentCollectionPublic capability stored at
-// `/public/MomentCollection`
+// The recipient must have a KOTD Collection object stored
+// and a public NiftoryCollectionPublic capability stored at
+// KOTD.CollectionPublicPath
 
 // Parameters:
 //
-// recipient: The Flow address of the account to receive the moment.
-// withdrawID: The id of the moment to be transferred
+// recipient: The Flow address of the account to receive the Collectible.
+// withdrawID: The id of the Collectible to be transferred
 
 transaction(recipient: Address, withdrawID: UInt64) {
 
@@ -24,7 +24,7 @@ transaction(recipient: Address, withdrawID: UInt64) {
         log("hello world")
         // borrow a reference to the owner's collection
         let collectionRef = acct.borrow<&KOTD.Collection>(from: KOTD.CollectionStoragePath)
-            ?? panic("Could not borrow a reference to the stored Moment collection")
+            ?? panic("Could not borrow a reference to the stored KOTD collection")
                 
         // withdraw the NFT
         self.transferToken <- collectionRef.withdraw(withdrawID: withdrawID)

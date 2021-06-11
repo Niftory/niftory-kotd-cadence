@@ -1,6 +1,6 @@
 import KOTD from "../contracts/KOTD.cdc"
 
-// This script returns the full metadata associated with a CollectibleItem
+// This script returns the full metadata associated with a Collectible Item
 // in the KOTD smart contract
 
 // Parameters:

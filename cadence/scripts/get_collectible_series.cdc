@@ -16,10 +16,10 @@ pub fun main(account: Address, id: UInt64): KOTD.Series {
 
     let collectionRef = getAccount(account).getCapability(KOTD.CollectionPublicPath)
         .borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()
-        ?? panic("Could not get public moment collection reference")
+        ?? panic("Could not get public KOTD collection reference")
 
     let token = collectionRef.borrowCollectible(id: id)
-        ?? panic("Could not borrow a reference to the specified moment")
+        ?? panic("Could not borrow a reference to the specified Collectible")
 
     let data = token.data
 

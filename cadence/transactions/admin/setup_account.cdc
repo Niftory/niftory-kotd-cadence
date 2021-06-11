@@ -1,7 +1,7 @@
 import NonFungibleToken from "../../contracts/NonFungibleToken.cdc"
 import KOTD from "../../contracts/KOTD.cdc"
 
-// This transaction sets up an account to collect KOTD collectibles
+// This transaction sets up an account to collect KOTD Collectibles
 // by storing an empty KOTD collectible collection and creating
 // a public capability for it
 

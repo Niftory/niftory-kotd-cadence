@@ -1,12 +1,12 @@
 import NonFungibleToken from "../../contracts/NonFungibleToken.cdc"
 import KOTD from "../../contracts/KOTD.cdc"
 
-// This transaction transfers a number of moments to a recipient
+// This transaction transfers a number of Collectibles to a recipient
 
 // Parameters
 //
 // recipientAddress: the Flow address who will receive the NFTs
-// collectibleIDs: an array of moment IDs of NFTs that recipient will receive
+// collectibleIDs: an array of Collectible IDs of NFTs that recipient will receive
 
 transaction(recipientAddress: Address, collectibleIDs: [UInt64]) {
 
@@ -24,7 +24,7 @@ transaction(recipientAddress: Address, collectibleIDs: [UInt64]) {
 
         // get the Collection reference for the receiver
         let receiverRef = recipient.getCapability(KOTD.CollectionPublicPath).borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()
-            ?? panic("Could not borrow a reference to the recipients moment receiver")
+            ?? panic("Could not borrow a reference to the recipients KOTD receiver")
 
         // deposit the NFT in the receivers collection
         receiverRef.batchDeposit(tokens: <-self.transferTokens)

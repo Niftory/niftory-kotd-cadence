@@ -1,13 +1,11 @@
 import KOTD from "../../contracts/KOTD.cdc"
 
-// This transaction creates a new play struct 
-// and stores it in the Top Shot smart contract
-// We currently stringify the metadata and insert it into the 
-// transaction string, but want to use transaction arguments soon
+// This transaction creates a new Collectible Item struct 
+// and stores it in the KOTD smart contract
 
 // Parameters:
 //
-// metadata: A dictionary of all the play metadata associated
+// metadata: A dictionary of all the Collectible metadata associated
 
 transaction(metaDataTitle: String, featuredArtists: [String]) {
 
