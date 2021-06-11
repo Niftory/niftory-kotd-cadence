@@ -13,7 +13,7 @@ import KOTD from "../contracts/KOTD.cdc"
 
 pub fun main(setID: UInt32, collectibleItemID: UInt32): UInt32 {
 
-    let editionSize = KOTD.getNumCollectibleItemsInEdition(setID: setID, collectibleItemID: collectibleItemID)
+    let editionSize = KOTD.getNumCollectiblesInEdition(setID: setID, collectibleItemID: collectibleItemID)
         ?? panic("Could not find the specified edition")
 
     return editionSize

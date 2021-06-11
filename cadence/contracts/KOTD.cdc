@@ -1,9 +1,22 @@
+/* 
+Central Smart Contract for KOTD x Niftory Battle Rap Collectibles
+
+Heavily based off the Dapper Labs NBA Top Shot contract, with the following modifications:
+-Nomenclature changes (e.g. 'Play' -> 'CollectibleItem')
+-Small quality of life improvements, like named paths
+-Data access improvements based off of Josh Hannan's "What I’ve learned since Top Shot" Cadence blogs
+-Additional contract defined metadata at the Series, Set, and CollectibleItem level
+-Functionality conveniences, such as closing all open sets & editions when starting a new Series
+
+Much thanks to all the Dapper resouces and Discord help used in the adaptation of this contract!
+ */
+
 import NonFungibleToken from "./NonFungibleToken.cdc"
 
 pub contract KOTD: NonFungibleToken {
 
     // -----------------------------------------------------------------------
-    // Public Paths
+    // Named Paths
     // -----------------------------------------------------------------------
 
     pub let CollectionStoragePath: StoragePath
@@ -15,8 +28,9 @@ pub contract KOTD: NonFungibleToken {
     // -----------------------------------------------------------------------
     pub event ContractInitialized()
     
-    // Emitted when a new CollectibleItem struct is created
+    // Emitted when a new CollectibleItem is created
     pub event CollectibleItemCreated(id: UInt32, metadata: {String:String})
+    
     // Emitted when a new series has been triggered by an admin
     pub event NewSeriesStarted(newCurrentSeries: UInt32)
 
@@ -35,9 +49,9 @@ pub contract KOTD: NonFungibleToken {
 
     // Events for Collection-related actions
     //
-    // Emitted when a collectibleItem is withdrawn from a Collection
+    // Emitted when a CollectibleItem is withdrawn from a Collection
     pub event Withdraw(id: UInt64, from: Address?)
-    // Emitted when a collectibleItem is deposited into a Collection
+    // Emitted when a CollectibleItem is deposited into a Collection
     pub event Deposit(id: UInt64, to: Address?)
 
     // Emitted when a Collectible is destroyed
@@ -50,12 +64,12 @@ pub contract KOTD: NonFungibleToken {
     
     // Series that this Set belongs to.
     // Series is a concept that indicates a group of Sets through time.
-    // Many Sets can exist at a time, but only one series.
+    // Many Sets can exist at a time, but only one Series.
     
-    //pointer to the current active Series
+    // ID of the current active Series
     pub var currentSeriesID: UInt32
 
-    //Variable size dictionary of Series structs.
+    // Variable size dictionary of Series structs
     access(self) var seriesDatas: {UInt32: Series}
 
     // Variable size dictionary of CollectibleItem structs
@@ -482,11 +496,12 @@ pub contract KOTD: NonFungibleToken {
             return &KOTD.sets[setID] as &Set
         }
 
-        // startNewSeries ends the current series by incrementing
-        // the series number, meaning that Collectibles minted after this
-        // will use the new series number
+        // startNewSeries ends the current series by creating a new Series, 
+        // meaning that Collectibles minted after this
+        // will belong to the new Series and reference it's metadata.  It also closes 
+        // all sets and editions in the current series.
         //
-        // Returns: The new series number
+        // Returns: The new series ID
         
         pub fun startNewSeries(name: String?, identityURL: String?): UInt32 {
             // End the current series and start a new one
@@ -744,8 +759,8 @@ pub contract KOTD: NonFungibleToken {
 
     // getCollectibleItemMetaDataByField returns the metadata associated with a 
     //                        specific field of the metadata
-    //                        Ex: field: "Team" will return something
-    //                        like "Memphis Grizzlies"
+    //                        Ex: field: "name" will return something
+    //                        like "Saynt LA"
     // 
     // Parameters: collectibleItemID: The id of the CollectibleItem that is being searched
     //             field: The field to search for
@@ -812,8 +827,7 @@ pub contract KOTD: NonFungibleToken {
         return KOTD.sets[setID]?.locked
     }
 
-    // @TODO: refactor to "getNumCollectiblesInEdition"
-    // getNumCollectibleItemsInEdition return the number of Collectibles that have been 
+    // getNumCollectiblesInEdition return the number of Collectibles that have been 
     //                        minted from a certain edition.
     //
     // Parameters: setID: The id of the Set that is being searched
@@ -821,7 +835,7 @@ pub contract KOTD: NonFungibleToken {
     //
     // Returns: The total number of Collectibles 
     //          that have been minted from an edition
-    pub fun getNumCollectibleItemsInEdition(setID: UInt32, collectibleItemID: UInt32): UInt32? {
+    pub fun getNumCollectiblesInEdition(setID: UInt32, collectibleItemID: UInt32): UInt32? {
         // Don't force a revert if the Set or collectibleItem ID is invalid
         // Remove the Set from the dictionary to get its field
         if let setToRead <- KOTD.sets.remove(key: setID) {

@@ -17,7 +17,7 @@ let collectibleId = ''
 let recipientAddress = ''
 let bulkCollectibleIDs = []
 
-test("Create Set", async () => {
+test("Create set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const create_set = await getTransactionCode({name: "admin/create_set", addressMap}) 
     const signers = [config["0xAdmin"]]
@@ -36,7 +36,7 @@ test("Create Set", async () => {
     }
 });
 
-test("Get Set", async () => {
+test("Get set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_set_data = await getScriptCode({name: "get_set_data", addressMap})
     const args = [[setId, UInt32]]
@@ -55,7 +55,7 @@ test("Get Set", async () => {
     }
 });
 
-test("Get Current Series", async () => {
+test("Get current series", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_current_series = await getScriptCode({name: "get_current_series", addressMap})
     const args = []
@@ -91,7 +91,7 @@ test("Create collectible item", async () => {
     }
 });
 
-test("Get collectible item meta data", async () => {
+test("Get collectible item metadata", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_collectible_item_metadata = await getScriptCode({name: "get_collectible_item_metadata", addressMap})
     const signers = [config["0xAdmin"]]
@@ -128,7 +128,7 @@ test("Get collectible item featured artists", async () => {
     }
 });
 
-test("Add collectible item to set", async () => {
+test("Add collectible item to a set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const add_collectible_item_to_set = await getTransactionCode({name: "admin/add_collectible_item_to_set", addressMap}) 
     const signers = [config["0xAdmin"]]
@@ -165,7 +165,7 @@ test("Get collectible items in a set", async () => {
     }
 });
 
-test("Mint collectible to set", async () => {
+test("Mint a collectible", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const mint_collectible = await getTransactionCode({name: "admin/mint_collectible", addressMap}) 
     const signers = [config["0xAdmin"]]
@@ -189,7 +189,7 @@ test("Mint collectible to set", async () => {
     }
 });
 
-test("Mint collectible in bulk", async () => {
+test("Mint collectibles in bulk", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const mint_collectibles_bulk = await getTransactionCode({name: "admin/mint_collectibles_bulk", addressMap}) 
     const signers = [config["0xAdmin"]]
@@ -216,6 +216,25 @@ test("Mint collectible in bulk", async () => {
     }
 });
 
+test("Get number of collectibles in an edition", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_edition_size = await getScriptCode({name: "get_edition_size", addressMap})
+    const signers = [config["0xAdmin"]]
+    const args = [[setId, UInt32], [collectibleItemId, UInt32]]
+    expect.assertions(1);
+
+    try {
+        const res = await executeScript({ code: get_edition_size, args, signers });
+        console.log(res)
+        expect(res).toEqual(6)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+
+
+    }
+});
+
 test("Create recipient account", async () => {
     //expect.assertions(1);
 
@@ -224,7 +243,7 @@ test("Create recipient account", async () => {
 });
 
 
-test("Set up account", async () => {
+test("Set up user account to accept KOTD collectibles", async () => {
     const addressMap = {NonFungibleToken: config["0xAdmin"], KOTD: config["0xAdmin"]};
     const setup_account = await getTransactionCode({name: "admin/setup_account", addressMap}) 
     const signers = [recipientAddress]
@@ -245,7 +264,7 @@ test("Set up account", async () => {
     }
 });
 
-test("Transfer collectible to user", async () => {
+test("Transfer a collectible to user", async () => {
     const addressMap = {NonFungibleToken: config["0xAdmin"], KOTD: config["0xAdmin"]};
     const transfer_collectible_to_user = await getTransactionCode({name: "admin/transfer_collectible_to_user", addressMap}) 
     const signers = [config["0xAdmin"]]
@@ -274,7 +293,7 @@ test("Transfer collectible to user", async () => {
     }
 });
 
-test("Bulk transfer collectible to user", async () => {
+test("Bulk transfer collectibles to user", async () => {
     const addressMap = {NonFungibleToken: config["0xAdmin"], KOTD: config["0xAdmin"]};
     const batch_transfer_collectible_to_user = await getTransactionCode({name: "admin/batch_transfer_collectible_to_user", addressMap}) 
     const signers = [config["0xAdmin"]]
@@ -301,7 +320,7 @@ test("Bulk transfer collectible to user", async () => {
     }
 });
 
-test("Start new series", async () => {
+test("Start a new series", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const start_new_series = await getTransactionCode({name: "admin/start_new_series", addressMap}) 
     const signers = [config["0xAdmin"]]
@@ -327,7 +346,7 @@ test("Start new series", async () => {
     }
 });
 
-test("Mint collectible to retired set", async () => {
+test("Fail to mint collectible to a retired set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const mint_collectible = await getTransactionCode({name: "admin/mint_collectible", addressMap}) 
     const signers = [config["0xAdmin"]]
