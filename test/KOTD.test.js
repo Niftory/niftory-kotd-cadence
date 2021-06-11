@@ -55,7 +55,24 @@ test("Get set", async () => {
     }
 });
 
-test("Get current series", async () => {
+test("Get Series for a Set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_set_series = await getScriptCode({name: "get_set_series", addressMap})
+    const signers = [config["0xAdmin"]]
+    const args = [[setId, UInt32]]
+    expect.assertions(1);
+
+    try {
+        const res = await executeScript({ code: get_set_series, args, signers });
+        console.log(res)
+        expect(res.seriesID).toEqual(0)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+    }
+});
+
+test("Get current Series", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_current_series = await getScriptCode({name: "get_current_series", addressMap})
     const args = []
