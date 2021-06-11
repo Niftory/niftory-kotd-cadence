@@ -22,6 +22,7 @@ test("Create Set", async () => {
     const create_set = await getTransactionCode({name: "admin/create_set", addressMap}) 
     const signers = [config["0xAdmin"]]
     const args = [[setName, FlowString], ["New Set URL", Optional(String)], ["Set Description Lorem Ipsum.", Optional(String)]]
+    expect.assertions(1);
 
     try {
         const txResult = await sendTransaction({ code: create_set, args, signers });
@@ -29,6 +30,9 @@ test("Create Set", async () => {
         expect(txResult.status).toEqual(4)
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -36,6 +40,7 @@ test("Get Set", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_set_data = await getScriptCode({name: "get_set_data", addressMap})
     const args = [[setId, UInt32]]
+    expect.assertions(1);
 
     try {
         const res = await executeScript({ code: get_set_data, args });
@@ -44,6 +49,9 @@ test("Get Set", async () => {
         
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -51,6 +59,7 @@ test("Get Current Series", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_current_series = await getScriptCode({name: "get_current_series", addressMap})
     const args = []
+    expect.assertions(1);
 
     try {
         const res = await executeScript({ code: get_current_series, args });
@@ -58,6 +67,8 @@ test("Get Current Series", async () => {
         console.log(res);
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
     }
 });
 
@@ -66,6 +77,7 @@ test("Create collectible item", async () => {
     const create_collectibe_item = await getTransactionCode({name: "admin/create_collectible_item", addressMap}) 
     const signers = [config["0xAdmin"]]
     const args = [[collectibleTitle, FlowString], [["Artist 1", "Artist 2"], Array(String)]]
+    expect.assertions(1);
 
     try {
         const txResult = await sendTransaction({ code: create_collectibe_item, args, signers });
@@ -73,6 +85,9 @@ test("Create collectible item", async () => {
         expect(txResult.status).toEqual(4)
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -81,12 +96,16 @@ test("Get collectible item meta data", async () => {
     const get_collectible_item_metadata = await getScriptCode({name: "get_collectible_item_metadata", addressMap})
     const signers = [config["0xAdmin"]]
     const args = [[collectibleItemId, UInt32]]
+    expect.assertions(1);
 
     try {
         const res = await executeScript({ code: get_collectible_item_metadata, args, signers });
         expect(res.title).toEqual(collectibleTitle)
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -95,6 +114,7 @@ test("Get collectible item featured artists", async () => {
     const get_collectible_item_artists = await getScriptCode({name: "get_collectible_item_artists", addressMap})
     const signers = [config["0xAdmin"]]
     const args = [[collectibleItemId, UInt32]]
+    expect.assertions(1);
 
     try {
         const res = await executeScript({ code: get_collectible_item_artists, args, signers });
@@ -102,6 +122,9 @@ test("Get collectible item featured artists", async () => {
         expect(res[0]).toEqual("Artist 1")
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -110,12 +133,16 @@ test("Add collectible item to set", async () => {
     const add_collectible_item_to_set = await getTransactionCode({name: "admin/add_collectible_item_to_set", addressMap}) 
     const signers = [config["0xAdmin"]]
     const args = [[setId, UInt32], [collectibleItemId, UInt32]]
+    expect.assertions(1);
 
     try {
         const txResult = await sendTransaction({ code: add_collectible_item_to_set, args, signers });
         expect(txResult.status).toEqual(4)
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -125,11 +152,16 @@ test("Get collectible items in a set", async () => {
     const signers = [config["0xAdmin"]]
     const args = [[setId, UInt32]]
 
+    //expect.assertions(1);
+
     try {
         const res = await executeScript({ code: get_collectible_items_in_set, args, signers });
         //expect(txResult.status).toEqual(4) todo update this test
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -138,6 +170,8 @@ test("Mint collectible to set", async () => {
     const mint_collectible = await getTransactionCode({name: "admin/mint_collectible", addressMap}) 
     const signers = [config["0xAdmin"]]
     const args = [[setId, UInt32], [collectibleItemId, UInt32], [config["0xAdmin"] , Address]]
+
+    expect.assertions(1);
 
     try {
         const txResult = await sendTransaction({ code: mint_collectible, args, signers });
@@ -149,6 +183,9 @@ test("Mint collectible to set", async () => {
         collectibleId = txResult.events[0].data.collectibleID
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -157,6 +194,7 @@ test("Mint collectible in bulk", async () => {
     const mint_collectibles_bulk = await getTransactionCode({name: "admin/mint_collectibles_bulk", addressMap}) 
     const signers = [config["0xAdmin"]]
     const args = [[setId, UInt32], [collectibleItemId, UInt32], [5, UInt64], [ config["0xAdmin"] , Address]]
+    expect.assertions(1);
 
     try {
         const txResult = await sendTransaction({ code: mint_collectibles_bulk, args, signers });
@@ -172,10 +210,15 @@ test("Mint collectible in bulk", async () => {
         }
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
 test("Create recipient account", async () => {
+    //expect.assertions(1);
+
     recipientAddress = await getAccountAddress("Alice");
     console.log("recipientAddress account created with address: " + recipientAddress);
 });
@@ -187,12 +230,18 @@ test("Set up account", async () => {
     const signers = [recipientAddress]
     const args = []
 
+    expect.assertions(1);
+
+
     try {
         const txResult = await sendTransaction({ code: setup_account, args, signers });
         expect(txResult.status).toEqual(4)
         console.log(txResult)
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -205,6 +254,9 @@ test("Transfer collectible to user", async () => {
     const args = [[recipient , Address], [withdrawId, UInt64]]
     console.log(args)
 
+    expect.assertions(1);
+
+
     try {
         const txResult = await sendTransaction({ code: transfer_collectible_to_user, args, signers });
         expect(txResult.status).toEqual(4)
@@ -216,6 +268,9 @@ test("Transfer collectible to user", async () => {
         }
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -226,6 +281,9 @@ test("Bulk transfer collectible to user", async () => {
     const recipient = recipientAddress
     const args = [[recipient , Address], [bulkCollectibleIDs, Array(UInt64)]]
     console.log(args)
+
+    expect.assertions(1);
+
 
     try {
         const txResult = await sendTransaction({ code: batch_transfer_collectible_to_user, args, signers });
@@ -238,6 +296,8 @@ test("Bulk transfer collectible to user", async () => {
         }
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
     }
 });
 
@@ -247,7 +307,8 @@ test("Start new series", async () => {
     const signers = [config["0xAdmin"]]
     const args = [["New Series Name", Optional(String)], [null, Optional(String)]]
 
-     
+    expect.assertions(1);
+ 
 
     try {
         const txResult = await sendTransaction({ code: start_new_series, args, signers });
@@ -260,6 +321,9 @@ test("Start new series", async () => {
         }
     } catch (e) {
         console.log(e);
+        expect(e).not.toBeDefined()
+
+
     }
 });
 
@@ -269,15 +333,13 @@ test("Mint collectible to retired set", async () => {
     const signers = [config["0xAdmin"]]
     const args = [[setId, UInt32], [collectibleItemId, UInt32], [config["0xAdmin"] , Address]]
 
+    expect.assertions(1);
+
     try {
         const txResult = await sendTransaction({ code: mint_collectible, args, signers });
-        expect(txResult.status).toEqual(4)
-        console.log("Minted: " + "{ ID: " + txResult.events[0].data.collectibleID + ", Serial: " + txResult.events[0].data.serialNumber
-            + ", Collectible Item ID: " + txResult.events[0].data.collectibleItemID
-            + ", Set ID: " + txResult.events[0].data.setID + "}")        
-        
-        collectibleId = txResult.events[0].data.collectibleID
+       
     } catch (e) {
         console.log(e);
+        expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
     }
 });
