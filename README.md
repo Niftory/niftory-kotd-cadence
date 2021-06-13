@@ -1,5 +1,11 @@
 # niftory-cadence
 
+From the root of the project:
+1. chmod +x tests.sh (to make the file executable)
+2. ./tests.sh
+    This starts the flow emulator, deploys contracts, and runs all tests.
+
+
 ## Getting Started: General
 | :exclamation:  This project last tested on Flow CLI v0.20.2. |
 |--------------------------------------------------------------|

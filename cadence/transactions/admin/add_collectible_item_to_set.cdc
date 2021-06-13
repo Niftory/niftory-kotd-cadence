@@ -1,15 +1,15 @@
 import KOTD from "../../contracts/KOTD.cdc"
 
-// This transaction is how a Top Shot admin adds a created play to a set
+// This transaction is how a KOTD admin adds a created Collectible Item to a Set
 
 // Parameters:
 //
-// setID: the ID of the set to which a created play is added
-// collectibleItemID: the ID of the play being added
+// setID: the ID of the set to which a created Collectible Item is added
+// collectibleItemID: the ID of the Collectible Item being added
 
 transaction(setID: UInt32, collectibleItemID: UInt32) {
 
-    // Local variable for the topshot Admin object
+    // Local variable for the KOTD Admin object
     let adminRef: &KOTD.Admin
 
     prepare(acct: AuthAccount) {
@@ -24,7 +24,7 @@ transaction(setID: UInt32, collectibleItemID: UInt32) {
         // Borrow a reference to the set to be added to
         let setRef = self.adminRef.borrowSet(setID: setID)
 
-        // Add the specified play ID
+        // Add the specified collectible item ID
         setRef.addCollectibleItem(collectibleItemID: collectibleItemID)
     }
 

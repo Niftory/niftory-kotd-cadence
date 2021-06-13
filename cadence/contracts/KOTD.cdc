@@ -1,14 +1,36 @@
+/* 
+Central Smart Contract for KOTD x Niftory Battle Rap Collectibles
+
+Heavily based off the Dapper Labs NBA Top Shot contract, with the following modifications:
+-Nomenclature changes (e.g. 'Play' -> 'CollectibleItem')
+-Small quality of life improvements, like named paths
+-Data access improvements based off of Josh Hannan's "What I’ve learned since Top Shot" Cadence blogs
+-Additional contract defined metadata at the Series, Set, and CollectibleItem level
+-Functionality conveniences, such as closing all open sets & editions when starting a new Series
+
+Much thanks to all the Dapper resouces and Discord help used in the adaptation of this contract!
+ */
+
 import NonFungibleToken from "./NonFungibleToken.cdc"
 
 pub contract KOTD: NonFungibleToken {
 
     // -----------------------------------------------------------------------
+    // Named Paths
+    // -----------------------------------------------------------------------
+
+    pub let CollectionStoragePath: StoragePath
+    pub let CollectionPublicPath: PublicPath
+    pub let AdminStoragePath: StoragePath
+    
+    // -----------------------------------------------------------------------
     // Contract Events
     // -----------------------------------------------------------------------
     pub event ContractInitialized()
     
-    // Emitted when a new CollectibleItem struct is created
+    // Emitted when a new CollectibleItem is created
     pub event CollectibleItemCreated(id: UInt32, metadata: {String:String})
+    
     // Emitted when a new series has been triggered by an admin
     pub event NewSeriesStarted(newCurrentSeries: UInt32)
 
@@ -27,9 +49,9 @@ pub contract KOTD: NonFungibleToken {
 
     // Events for Collection-related actions
     //
-    // Emitted when a collectibleItem is withdrawn from a Collection
+    // Emitted when a CollectibleItem is withdrawn from a Collection
     pub event Withdraw(id: UInt64, from: Address?)
-    // Emitted when a collectibleItem is deposited into a Collection
+    // Emitted when a CollectibleItem is deposited into a Collection
     pub event Deposit(id: UInt64, to: Address?)
 
     // Emitted when a Collectible is destroyed
@@ -42,12 +64,12 @@ pub contract KOTD: NonFungibleToken {
     
     // Series that this Set belongs to.
     // Series is a concept that indicates a group of Sets through time.
-    // Many Sets can exist at a time, but only one series.
+    // Many Sets can exist at a time, but only one Series.
     
-    //pointer to the current active Series
+    // ID of the current active Series
     pub var currentSeriesID: UInt32
 
-    //Variable size dictionary of Series structs.
+    // Variable size dictionary of Series structs
     access(self) var seriesDatas: {UInt32: Series}
 
     // Variable size dictionary of CollectibleItem structs
@@ -118,16 +140,20 @@ pub contract KOTD: NonFungibleToken {
         // The unique ID for the CollectibleItem
         pub let collectibleItemID: UInt32
 
+        //array of strings to capture names of any featured artists.  Could be used as keys for a royalty structure in a future marketplace.
+        pub let featuredArtists: [String]
+
         // Stores all the metadata about the CollectibleItem as a string mapping
         
         pub let metadata: {String: String}
 
-        init(metadata: {String: String}) {
+        init(metadata: {String: String}, featuredArtists: [String]) {
             pre {
                 metadata.length != 0: "New CollectibleItem metadata cannot be empty"
             }
             self.collectibleItemID = KOTD.nextCollectibleItemID
             self.metadata = metadata
+            self.featuredArtists = featuredArtists
 
             // Increment the ID so that it isn't used again
             KOTD.nextCollectibleItemID = KOTD.nextCollectibleItemID + UInt32(1)
@@ -150,6 +176,10 @@ pub contract KOTD: NonFungibleToken {
 
         pub let name: String
 
+        pub let setIdentityURL: String?
+
+        pub let description: String?
+
         pub let series: Series
 
         pub var collectibleItems: [UInt32]
@@ -165,6 +195,8 @@ pub contract KOTD: NonFungibleToken {
 
             self.setID = referencedSet.setID
             self.name = referencedSet.name
+            self.setIdentityURL = referencedSet.setIdentityURL
+            self.description = referencedSet.description
             self.series = referencedSet.series
             self.collectibleItems = referencedSet.collectibleItems
             self.retired = referencedSet.retired
@@ -205,6 +237,11 @@ pub contract KOTD: NonFungibleToken {
         // Many Sets can exist at a time, but only one Series.
         pub let series: Series
 
+        // Optional string to hold URL for an identity visual associated with a Set.
+        pub let setIdentityURL: String?
+
+        pub let description: String?
+
         // Array of collectibleItems that are a part of this set.
         // When a collectibleItem is added to the set, its ID gets appended here.
         // The ID does not get removed from this array when a CollectibleItem is retired.
@@ -232,13 +269,15 @@ pub contract KOTD: NonFungibleToken {
         // show its place in the Set, eg. 13 of 60.
         pub var numberMintedPerCollectibleItem: {UInt32: UInt32}
 
-        init(name: String) {
+        init(name: String, setIdentityURL: String?, description: String?) {
             pre {
                 name.length > 0: "New Set name cannot be empty"
             }
 
             self.setID = KOTD.nextSetID
             self.name = name
+            self.setIdentityURL = setIdentityURL
+            self.description = description
             self.series = KOTD.seriesDatas[KOTD.currentSeriesID]!
             self.collectibleItems = []
             self.retired = {}
@@ -414,9 +453,9 @@ pub contract KOTD: NonFungibleToken {
         //
         // Returns: the ID of the new CollectibleItem object
 
-        pub fun createCollectibleItem(metadata: {String: String}): UInt32 {
+        pub fun createCollectibleItem(metadata: {String: String}, featuredArtists: [String]): UInt32 {
             // Create the new CollectibleItem
-            var newCollectibleItem = CollectibleItem(metadata: metadata)
+            var newCollectibleItem = CollectibleItem(metadata: metadata, featuredArtists: featuredArtists)
             let newID = newCollectibleItem.collectibleItemID
 
             // Store it in the contract storage
@@ -430,9 +469,9 @@ pub contract KOTD: NonFungibleToken {
         //
         // Parameters: name: The name of the Set
         
-        pub fun createSet(name: String) {
+        pub fun createSet(name: String, setIdentityURL: String?, description: String?) {
             // Create the new Set
-            var newSet <- create Set(name: name)
+            var newSet <- create Set(name: name, setIdentityURL: setIdentityURL, description: description)
 
             // Store it in the sets mapping field
             KOTD.sets[newSet.setID] <-! newSet
@@ -457,16 +496,27 @@ pub contract KOTD: NonFungibleToken {
             return &KOTD.sets[setID] as &Set
         }
 
-        // startNewSeries ends the current series by incrementing
-        // the series number, meaning that Collectibles minted after this
-        // will use the new series number
+        // startNewSeries ends the current series by creating a new Series, 
+        // meaning that Collectibles minted after this
+        // will belong to the new Series and reference it's metadata.  It also closes 
+        // all sets and editions in the current series.
         //
-        // Returns: The new series number
+        // Returns: The new series ID
         
         pub fun startNewSeries(name: String?, identityURL: String?): UInt32 {
             // End the current series and start a new one
             // by incrementing the KOTD series number
+            let setIDs = KOTD.sets.keys 
 
+            var i: Int = 0
+            while (i < setIDs.length) {
+                var currSet = SetData(setID: setIDs[i])
+                if (currSet.series.seriesID == KOTD.currentSeriesID) {
+                    self.borrowSet(setID: setIDs[i]).retireAll()
+                    self.borrowSet(setID: setIDs[i]).lock()
+                }
+                i = i + 1;
+            }      
 
             var newSeries = Series(seriesID: KOTD.currentSeriesID + UInt32(1), name: name, seriesIdentityURL: identityURL)
 
@@ -474,6 +524,8 @@ pub contract KOTD: NonFungibleToken {
 
             //put it in storage
             KOTD.seriesDatas[KOTD.currentSeriesID] = newSeries
+
+            
 
 
             emit NewSeriesStarted(newCurrentSeries: KOTD.currentSeriesID)
@@ -519,7 +571,7 @@ pub contract KOTD: NonFungibleToken {
     // This is the interface that users can cast their Collectible Collection as
     // to allow others to deposit Collectibles into their Collection. It also allows for reading
     // the IDs of Collectibles in the Collection.
-    pub resource interface CollectibleCollectionPublic {
+    pub resource interface NiftoryCollectibleCollectionPublic {
         pub fun deposit(token: @NonFungibleToken.NFT)
         pub fun batchDeposit(tokens: @NonFungibleToken.Collection)
         pub fun getIDs(): [UInt64]
@@ -536,7 +588,7 @@ pub contract KOTD: NonFungibleToken {
 
     // Collection is a resource that every user who owns NFTs 
     // will store in their account to manage their NFTS
-    pub resource Collection: CollectibleCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic { 
+    pub resource Collection: NiftoryCollectibleCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic { 
         // Dictionary of Collectible conforming tokens
         // NFT is a resource type with a UInt64 ID field
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
@@ -696,10 +748,19 @@ pub contract KOTD: NonFungibleToken {
         return self.collectibleItemDatas[collectibleItemID]?.metadata
     }
 
+    // getCollectibleItemMetaData returns all the metadata associated with a specific CollectibleItem
+    // 
+    // Parameters: collectibleItemID: The id of the CollectibleItem that is being searched
+    //
+    // Returns: The metadata as a String to String mapping optional
+    pub fun getCollectibleItemFeaturedArtists(collectibleItemID: UInt32): [String]? {
+        return self.collectibleItemDatas[collectibleItemID]?.featuredArtists
+    }
+
     // getCollectibleItemMetaDataByField returns the metadata associated with a 
     //                        specific field of the metadata
-    //                        Ex: field: "Team" will return something
-    //                        like "Memphis Grizzlies"
+    //                        Ex: field: "name" will return something
+    //                        like "Saynt LA"
     // 
     // Parameters: collectibleItemID: The id of the CollectibleItem that is being searched
     //             field: The field to search for
@@ -766,8 +827,7 @@ pub contract KOTD: NonFungibleToken {
         return KOTD.sets[setID]?.locked
     }
 
-    // @TODO: refactor to "getNumCollectiblesInEdition"
-    // getNumCollectibleItemsInEdition return the number of Collectibles that have been 
+    // getNumCollectiblesInEdition return the number of Collectibles that have been 
     //                        minted from a certain edition.
     //
     // Parameters: setID: The id of the Set that is being searched
@@ -775,7 +835,7 @@ pub contract KOTD: NonFungibleToken {
     //
     // Returns: The total number of Collectibles 
     //          that have been minted from an edition
-    pub fun getNumCollectibleItemsInEdition(setID: UInt32, collectibleItemID: UInt32): UInt32? {
+    pub fun getNumCollectiblesInEdition(setID: UInt32, collectibleItemID: UInt32): UInt32? {
         // Don't force a revert if the Set or collectibleItem ID is invalid
         // Remove the Set from the dictionary to get its field
         if let setToRead <- KOTD.sets.remove(key: setID) {
@@ -808,14 +868,20 @@ pub contract KOTD: NonFungibleToken {
         self.nextSetID = 1
         self.totalSupply = 0
 
-        // Put a new Collection in storage @TODO: change to "CollectibleCollection"
-        self.account.save<@Collection>(<- create Collection(), to: /storage/CollectibleCollection003)
+        // initialize paths
+        // Set our named paths
+        self.CollectionStoragePath = /storage/NiftoryCollectibleCollection
+        self.CollectionPublicPath = /public/NiftoryCollectibleCollection
+        self.AdminStoragePath = /storage/KOTDAdmin003
+
+        // Put a new Collection in storage 
+        self.account.save<@Collection>(<- create Collection(), to: self.CollectionStoragePath)
 
         // Create a public capability for the Collection
-        self.account.link<&{CollectibleCollectionPublic}>(/public/CollectibleCollection, target: /storage/CollectibleCollection003)
+        self.account.link<&{NiftoryCollectibleCollectionPublic}>(self.CollectionPublicPath, target: self.CollectionStoragePath)
 
         // Put the Minter in storage
-        self.account.save<@Admin>(<- create Admin(), to: /storage/KOTDAdmin003)
+        self.account.save<@Admin>(<- create Admin(), to: self.AdminStoragePath)
 
         emit ContractInitialized()
     }

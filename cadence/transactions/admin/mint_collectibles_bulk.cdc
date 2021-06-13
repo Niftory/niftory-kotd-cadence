@@ -1,14 +1,14 @@
 import KOTD from "../../contracts/KOTD.cdc"
 
 // This transaction mints multiple moments 
-// from a single set/play combination (otherwise known as edition)
+// from a single set/collectible item combination (otherwise known as edition)
 
 // Parameters:
 //
 // setID: the ID of the set to be minted from
-// collectibleItemID: the ID of the Play from which the Moments are minted 
-// quantity: the quantity of Moments to be minted
-// recipientAddr: the Flow address of the account receiving the collection of minted moments
+// collectibleItemID: the ID of the Collectible Item from which the Collectibles are minted 
+// quantity: the quantity of Collectibles to be minted
+// recipientAddr: the Flow address of the account receiving the collection of minted Collectibles
 
 transaction(setID: UInt32, collectibleItemID: UInt32, quantity: UInt64, recipientAddr: Address) {
 
@@ -33,7 +33,7 @@ transaction(setID: UInt32, collectibleItemID: UInt32, quantity: UInt64, recipien
         let recipient = getAccount(recipientAddr)
 
         // get the Collection reference for the receiver
-        let receiverRef = recipient.getCapability(/public/CollectibleCollection).borrow<&{KOTD.CollectibleCollectionPublic}>()
+        let receiverRef = recipient.getCapability(/public/NiftoryCollectibleCollection).borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()
             ?? panic("Cannot borrow a reference to the recipient's collection")
 
         // deposit the NFT in the receivers collection
