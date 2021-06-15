@@ -396,3 +396,169 @@ test("Fail to mint collectible to a retired set", async () => {
         expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
     }
 });
+
+let setId2 = ''
+test("Create a new set in next series", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const create_set = await getTransactionCode({name: "admin/create_set", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[setName, FlowString], ["New Set URL", Optional(String)], ["Set Description Lorem Ipsum.", Optional(String)]]
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: create_set, args, signers });
+        setId2 = txResult.events[0].data.setID
+        expect(txResult.status).toEqual(4)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+
+
+    }
+});
+
+let collectibleItemId2 = ''
+let collectibleTitle2 = 'New collectible2'
+
+test("Create collectible item in the new set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const create_collectibe_item = await getTransactionCode({name: "admin/create_collectible_item", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[collectibleTitle2, FlowString], [["Artist 1", "Artist 2"], Array(String)]]
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: create_collectibe_item, args, signers });
+        collectibleItemId2 = txResult.events[0].data.id
+        expect(txResult.status).toEqual(4)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+
+
+    }
+});
+
+test("Add collectible item to the new set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const add_collectible_item_to_set = await getTransactionCode({name: "admin/add_collectible_item_to_set", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[setId2, UInt32], [collectibleItemId2, UInt32]]
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: add_collectible_item_to_set, args, signers });
+        expect(txResult.status).toEqual(4)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+
+
+    }
+});
+
+test("Retire collectible item from the new set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const retire_collectible_item = await getTransactionCode({name: "admin/retire_collectible_item", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[ setId2 , UInt32], [collectibleItemId2, UInt32]]
+
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: retire_collectible_item, args, signers });
+        expect(txResult.status).toEqual(4)
+    } catch (e) {
+        expect(e).not.toBeDefined()
+        console.log(e);
+    }
+});
+
+test("Fail to mint collectible from the retired collectibe item", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const mint_collectible = await getTransactionCode({name: "admin/mint_collectible", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[setId2, UInt32], [collectibleItemId2, UInt32], [config["0xAdmin"] , Address]]
+
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: mint_collectible, args, signers });
+       
+    } catch (e) {
+        console.log(e);
+        expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
+    }
+});
+
+
+let collectibleItemId3 = ''
+let collectibleTitle3 = 'New collectible3'
+
+test("Create a second collectible item in the new set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const create_collectibe_item = await getTransactionCode({name: "admin/create_collectible_item", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[collectibleTitle3, FlowString], [["Artist 1", "Artist 2"], Array(String)]]
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: create_collectibe_item, args, signers });
+        collectibleItemId3 = txResult.events[0].data.id
+        expect(txResult.status).toEqual(4)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+
+
+    }
+});
+
+test("Add collectible item to the new set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const add_collectible_item_to_set = await getTransactionCode({name: "admin/add_collectible_item_to_set", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[setId2, UInt32], [collectibleItemId3, UInt32]]
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: add_collectible_item_to_set, args, signers });
+        expect(txResult.status).toEqual(4)
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+
+
+    }
+});
+
+test("Retire all collectible items from a set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const retire_all_collectible_items_in_set = await getTransactionCode({name: "admin/retire_all_collectible_items_in_set", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[ setId2 , UInt32]]
+
+    try {
+        const txResult = await sendTransaction({ code: retire_all_collectible_items_in_set, args, signers });
+        expect(txResult.status).toEqual(4)
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+test("Fail to mint collectible 3 from the retired set", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const mint_collectible = await getTransactionCode({name: "admin/mint_collectible", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[setId2, UInt32], [collectibleItemId3, UInt32], [config["0xAdmin"] , Address]]
+
+    expect.assertions(1);
+
+    try {
+        const txResult = await sendTransaction({ code: mint_collectible, args, signers });
+       
+    } catch (e) {
+        console.log(e);
+        expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
+    }
+});
