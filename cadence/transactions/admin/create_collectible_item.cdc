@@ -18,7 +18,7 @@ transaction(metaDataTitle: String, featuredArtists: [String]) {
 
         // borrow a reference to the admin resource
         self.currCollectibleItemID = KOTD.nextCollectibleItemID;
-        self.adminRef = acct.borrow<&KOTD.Admin>(from: /storage/KOTDAdmin003)
+        self.adminRef = acct.borrow<&KOTD.Admin>(from: KOTD.AdminStoragePath)
             ?? panic("No admin resource in storage")
         self.metadata = {
             "title": metaDataTitle

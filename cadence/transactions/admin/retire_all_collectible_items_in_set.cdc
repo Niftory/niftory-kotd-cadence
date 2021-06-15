@@ -14,7 +14,7 @@ transaction(setID: UInt32) {
     prepare(acct: AuthAccount) {
 
         // borrow a reference to the Admin resource in storage
-        self.adminRef = acct.borrow<&KOTD.Admin>(from: /storage/KOTDAdmin003)
+        self.adminRef = acct.borrow<&KOTD.Admin>(from: KOTD.AdminStoragePath)
             ?? panic("No admin resource in storage")
     }
 
