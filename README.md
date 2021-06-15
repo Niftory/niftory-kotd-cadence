@@ -4,11 +4,11 @@ This repo contains the smart contracts, supporting transactions and scripts, and
 
 The collectible structure is very similar to NBA Top Shot (and most card based collectibles), where collectibles will be minted in varying size runs, and belong to different sets and series over time.  Some improvements and changes have been made to the Top Shot contract, including:
 
--Nomenclature changes (e.g. 'Play' -> 'CollectibleItem')
--Small quality of life improvements, like named paths
--Data access improvements based off of Josh Hannan's "What I’ve learned since Top Shot" Cadence blogs
--Additional contract defined metadata at the Series, Set, and CollectibleItem level
--Functionality conveniences, such as closing all open sets & editions when starting a new Series
+    *Nomenclature changes (e.g. 'Play' -> 'CollectibleItem')
+    *Small quality of life improvements, like named paths
+    *Data access improvements based off of Josh Hannan's "What I’ve learned since Top Shot" Cadence blogs
+    *Additional contract defined metadata at the Series, Set, and CollectibleItem level
+    *Functionality conveniences, such as closing all open sets & editions when starting a new Series
 
 The official flow-js-testing library has been used for the creation of the test suite.
 
@@ -17,11 +17,28 @@ Much thanks to all the Dapper resouces and Discord help used in the adaptation o
 | :exclamation:  This project last tested on Flow CLI v0.21.0 |
 |--------------------------------------------------------------|
 
-## Running the Tests
+## Running the tests
 
-From the root of the project:
+To run the tests, yarn and the Flow CLI must be installed.
 
-1.  Make the test shell script executable:
+    ```
+    npm install --global yarn
+    ```
+    
+    ```
+    brew install flow-cli
+    ```
+
+
+Once installed, from the root of the project:
+
+1. Install all dependencies:
+
+    ```
+    yarn install
+    ```
+
+2. Make the test shell script executable:
 
     ```
     chmod +x tests.sh
@@ -33,43 +50,7 @@ From the root of the project:
     ./tests.sh
     ```
 
-## Getting Started: Development
-
-
-1. Install the Flow CLI:
-
-    ```
-    brew install flow-cli
-    ```
-
-## Getting Started: Working on Tests
-| :exclamation: Cadence tests are expected to run against the local emulator. |
-|-----------------------------------------------------------------------------|
-
-1. Navigate to the lib/go/test path.
-2. Set up your testing flow.json and .env files, per the example.flow.json and .env.example in the root directory.
-3. Start a shell window in this directory and run:
-
-    ```
-    flow emulator -v
-    ```
-4. Open another shell window and run the following command to deploy your contracts:
-    ```
-    flow project deploy --network=emulator
-    ```
-5. Run your tests
-
-    ```
-    npm run test
-    ```
-
-#### In order to update a deployed contract, restart your emulator. You _can_ try the following command:
-
-    flow project deploy --network=emulator --update
-   
-| :zap: These next areas are focused on testnet, not the local emulator. |
-|-----------------------------------------------------------------------------|
-## Getting Started: General Cadence Testnet Operations
+## Getting started: general Cadence Testnet operations
 
 1. Generate a key pair with the Flow CLI:
     ```
@@ -85,7 +66,7 @@ From the root of the project:
 
 You're now setup to run any desired commands against testnet.
 
-## Common Commands
+## Common commands
 | :bulb: Contracts are already deployed to testnet - you'll generally only need to run scripts and transactions. |
 |---------------------------------------------------------------------------------------------------------------|
 
@@ -117,13 +98,13 @@ You're now setup to run any desired commands against testnet.
 ##### Add a Collectible Item to a Set
     flow transactions send ./cadence/transactions/admin/add_collectible_item_to_set.cdc --signer testnet-account --network=testnet --args-json '[{"type": "UInt32","value": "1"}, {"type": "UInt32","value": "2"}]'
 
-##### Batch Mint Collectible NFTs
+##### Batch mint Collectible NFTs
     flow transactions send ./cadence/transactions/admin/mint_collectibles_bulk.cdc --signer testnet-account --network=testnet --args-json '[{"type": "UInt32","value": "1"}, {"type": "UInt32","value": "2"}, {"type": "UInt64","value": "10"}]'
 
 ##### Get Collectible IDs in a Collection
     flow scripts execute ./cadence/scripts/get_collection_collectible_ids.cdc --network=testnet --args-json '[{"type": "Address","value": "0x9f3e19cda04154fc"}]'
 
-##### Get Metadata for a Given Collectible Item
+##### Get metadata for a given Collectible Item
      flow scripts execute ./cadence/scripts/get_collectible_item_metadata.cdc --network=testnet --args-json '[{"type": "UInt32","value": "1"}]'
 
 ##### Get Serial Number for a Collectible
