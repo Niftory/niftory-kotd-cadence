@@ -1,14 +1,40 @@
-# niftory-cadence
+# niftory-kotd-cadence
+
+This repo contains the smart contracts, supporting transactions and scripts, and test suite for the KOTD collectible experience, built on Flow.
+
+The collectible structure is very similar to NBA Top Shot (and most card based collectibles), where collectibles will be minted in varying size runs, and belong to different sets and series over time.  Some improvements and changes have been made to the Top Shot contract, including:
+
+-Nomenclature changes (e.g. 'Play' -> 'CollectibleItem')
+-Small quality of life improvements, like named paths
+-Data access improvements based off of Josh Hannan's "What I’ve learned since Top Shot" Cadence blogs
+-Additional contract defined metadata at the Series, Set, and CollectibleItem level
+-Functionality conveniences, such as closing all open sets & editions when starting a new Series
+
+The official flow-js-testing library has been used for the creation of the test suite.
+
+Much thanks to all the Dapper resouces and Discord help used in the adaptation of this contract!
+
+| :exclamation:  This project last tested on Flow CLI v0.21.0 |
+|--------------------------------------------------------------|
+
+## Running the Tests
 
 From the root of the project:
-1. chmod +x tests.sh (to make the file executable)
-2. ./tests.sh
-    This starts the flow emulator, deploys contracts, and runs all tests.
 
+1.  Make the test shell script executable:
 
-## Getting Started: General
-| :exclamation:  This project last tested on Flow CLI v0.20.2. |
-|--------------------------------------------------------------|
+    ```
+    chmod +x tests.sh
+    ```
+    
+3. Run the 'test' shell script; this starts the flow emulator, deploys contracts, runs all tests, then cleans up the emulator:
+    
+    ```
+    ./tests.sh
+    ```
+
+## Getting Started: Development
+
 
 1. Install the Flow CLI:
 
@@ -81,9 +107,6 @@ You're now setup to run any desired commands against testnet.
 
 ##### Get Set Name
     flow scripts execute ./cadence/scripts/get_set_name.cdc --network=testnet --args-json '[{"type": "UInt32","value": "1"}]'
-
-##### Create Collectible Item (Content) - Not Working
-    flow transactions send ./cadence/transactions/admin/create_collectible_item.cdc --signer testnet-account --network=testnet --args-json '[{"type": "Dictionary","value": [{"key": {"type": "String", "value": "Title"}, "value": { "type": "String", "value": "Test Moment 002" },}]}]'
 
 ##### Create Collectible Item (Content)
     flow transactions send ./cadence/transactions/admin/create_collectible_item.cdc --signer testnet-account --network=testnet --args-json '[{"type": "String","value": "Test Moment 002"}]'
