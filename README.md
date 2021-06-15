@@ -48,7 +48,7 @@ Once installed, from the root of the project:
     ./tests.sh
     ```
 
-## Getting started: general Cadence Testnet operations
+## Getting started with Testnet
 
 1. Generate a key pair with the Flow CLI:
     ```
@@ -65,7 +65,7 @@ Once installed, from the root of the project:
 You're now setup to run any desired commands against testnet.
 
 ## Common commands
-| :bulb: Contracts are already deployed to testnet - you'll generally only need to run scripts and transactions. |
+| :bulb: Contracts are already deployed to testnet at 0x9f3e19cda04154fc - you'll generally only need to run scripts and transactions. |
 |---------------------------------------------------------------------------------------------------------------|
 
 ##### Deploy contract 
