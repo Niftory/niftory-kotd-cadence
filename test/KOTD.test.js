@@ -29,10 +29,8 @@ test("Create set", async () => {
         setId = txResult.events[0].data.setID
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -48,10 +46,8 @@ test("Get set", async () => {
         expect(res.name).toEqual(setName)
         
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -67,7 +63,7 @@ test("Get Series for a Set", async () => {
         console.log(res)
         expect(res.seriesID).toEqual(0)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
     }
 });
@@ -83,9 +79,8 @@ test("Get current Series", async () => {
         expect(res.seriesID).toEqual(0)
         console.log(res);
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
     }
 });
 
@@ -101,10 +96,8 @@ test("Create collectible item", async () => {
         collectibleItemId = txResult.events[0].data.id
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -119,10 +112,8 @@ test("Get collectible item metadata", async () => {
         const res = await executeScript({ code: get_collectible_item_metadata, args, signers });
         expect(res.title).toEqual(collectibleTitle)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -138,10 +129,8 @@ test("Get collectible item featured artists", async () => {
         console.log(res)
         expect(res[0]).toEqual("Artist 1")
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -156,10 +145,8 @@ test("Add collectible item to a set", async () => {
         const txResult = await sendTransaction({ code: add_collectible_item_to_set, args, signers });
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -169,16 +156,14 @@ test("Get collectible items in a set", async () => {
     const signers = [config["0xAdmin"]]
     const args = [[setId, UInt32]]
 
-    //expect.assertions(1);
+    expect.assertions(1);
 
     try {
         const res = await executeScript({ code: get_collectible_items_in_set, args, signers });
-        //expect(txResult.status).toEqual(4) todo update this test
+        expect(res[0]).toEqual(collectibleItemId)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -199,10 +184,8 @@ test("Mint a collectible", async () => {
         
         collectibleId = txResult.events[0].data.collectibleID
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -226,10 +209,8 @@ test("Mint collectibles in bulk", async () => {
             }
         }
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -245,16 +226,12 @@ test("Get number of collectibles in an edition", async () => {
         console.log(res)
         expect(res).toEqual(6)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
 test("Create recipient account", async () => {
-    //expect.assertions(1);
-
     recipientAddress = await getAccountAddress("Alice");
     console.log("recipientAddress account created with address: " + recipientAddress);
 });
@@ -274,10 +251,8 @@ test("Set up user account to accept KOTD collectibles", async () => {
         expect(txResult.status).toEqual(4)
         console.log(txResult)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -303,10 +278,8 @@ test("Transfer a collectible to user", async () => {
             }
         }
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -331,9 +304,8 @@ test("Bulk transfer collectibles to user", async () => {
             }
         }
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
     }
 });
 
@@ -342,6 +314,7 @@ test("Get Series for a Collectible", async () => {
     const get_collectible_series = await getScriptCode({name: "get_collectible_series", addressMap})
     const signers = [config["0xAdmin"]]
     const args = [[recipientAddress, Address], [collectibleId, UInt64]]
+    
     expect.assertions(1);
 
     try {
@@ -349,7 +322,7 @@ test("Get Series for a Collectible", async () => {
         console.log(res)
         expect(res.seriesID).toEqual(0)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
     }
 });
@@ -361,7 +334,6 @@ test("Start a new series", async () => {
     const args = [["New Series Name", Optional(String)], [null, Optional(String)]]
 
     expect.assertions(1);
- 
 
     try {
         const txResult = await sendTransaction({ code: start_new_series, args, signers });
@@ -373,10 +345,8 @@ test("Start a new series", async () => {
             }
         }
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -392,7 +362,7 @@ test("Fail to mint collectible to a retired set", async () => {
         const txResult = await sendTransaction({ code: mint_collectible, args, signers });
        
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
     }
 });
@@ -410,10 +380,8 @@ test("Create a new set in next series", async () => {
         setId2 = txResult.events[0].data.setID
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -432,10 +400,8 @@ test("Create collectible item in the new set", async () => {
         collectibleItemId2 = txResult.events[0].data.id
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -450,10 +416,8 @@ test("Add collectible item to the new set", async () => {
         const txResult = await sendTransaction({ code: add_collectible_item_to_set, args, signers });
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -470,7 +434,7 @@ test("Retire collectible item from the new set", async () => {
         expect(txResult.status).toEqual(4)
     } catch (e) {
         expect(e).not.toBeDefined()
-        console.log(e);
+        //console.log(e);
     }
 });
 
@@ -483,14 +447,12 @@ test("Fail to mint collectible from the retired collectibe item", async () => {
     expect.assertions(1);
 
     try {
-        const txResult = await sendTransaction({ code: mint_collectible, args, signers });
-       
+        const txResult = await sendTransaction({ code: mint_collectible, args, signers });     
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
     }
 });
-
 
 let collectibleItemId3 = ''
 let collectibleTitle3 = 'New collectible3'
@@ -507,10 +469,8 @@ test("Create a second collectible item in the new set", async () => {
         collectibleItemId3 = txResult.events[0].data.id
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -525,10 +485,8 @@ test("Add collectible item to the new set", async () => {
         const txResult = await sendTransaction({ code: add_collectible_item_to_set, args, signers });
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).not.toBeDefined()
-
-
     }
 });
 
@@ -542,7 +500,8 @@ test("Retire all collectible items from a set", async () => {
         const txResult = await sendTransaction({ code: retire_all_collectible_items_in_set, args, signers });
         expect(txResult.status).toEqual(4)
     } catch (e) {
-        console.log(e);
+        //console.log(e);
+        expect(e).not.toBeDefined()
     }
 });
 
@@ -556,9 +515,8 @@ test("Fail to mint collectible 3 from the retired set", async () => {
 
     try {
         const txResult = await sendTransaction({ code: mint_collectible, args, signers });
-       
     } catch (e) {
-        console.log(e);
+        //console.log(e);
         expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
     }
 });
