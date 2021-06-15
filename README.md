@@ -4,11 +4,11 @@ This repo contains the smart contracts, supporting transactions and scripts, and
 
 The collectible structure is very similar to NBA Top Shot (and most card based collectibles), where collectibles will be minted in varying size runs, and belong to different sets and series over time.  Some improvements and changes have been made to the Top Shot contract, including:
 
-    *Nomenclature changes (e.g. 'Play' -> 'CollectibleItem')
-    *Small quality of life improvements, like named paths
-    *Data access improvements based off of Josh Hannan's "What I’ve learned since Top Shot" Cadence blogs
-    *Additional contract defined metadata at the Series, Set, and CollectibleItem level
-    *Functionality conveniences, such as closing all open sets & editions when starting a new Series
+ *Nomenclature changes (e.g. 'Play' -> 'CollectibleItem')
+ *Small quality of life improvements, like named paths
+ *Data access improvements based off of Josh Hannan's "What I’ve learned since Top Shot" Cadence blogs
+ *Additional contract defined metadata at the Series, Set, and CollectibleItem level
+ *Functionality conveniences, such as closing all open sets & editions when starting a new Series
 
 The official flow-js-testing library has been used for the creation of the test suite.
 
@@ -21,13 +21,13 @@ Much thanks to all the Dapper resouces and Discord help used in the adaptation o
 
 To run the tests, yarn and the Flow CLI must be installed.
 
-    ```
-    npm install --global yarn
-    ```
     
-    ```
+    npm install --global yarn
+    
+    
+    
     brew install flow-cli
-    ```
+    
 
 
 Once installed, from the root of the project:
