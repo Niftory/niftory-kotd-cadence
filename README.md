@@ -35,14 +35,16 @@ Once installed, from the root of the project:
     ```
     yarn install
     ```
+    
+2. Set up your flow.json and .env, following the template from example.flow.json and env.example.
 
-2. Make the test shell script executable:
+3. Make the test shell script executable:
 
     ```
     chmod +x tests.sh
     ```
     
-3. Run the 'test' shell script; this starts the flow emulator, deploys contracts, runs all tests, then cleans up the emulator:
+4. Run the 'test' shell script; this starts the flow emulator, deploys contracts, runs all tests, then cleans up the emulator:
     
     ```
     ./tests.sh
