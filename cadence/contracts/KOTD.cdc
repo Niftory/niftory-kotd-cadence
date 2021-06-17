@@ -245,12 +245,12 @@ pub contract KOTD: NonFungibleToken {
         // Array of collectibleItems that are a part of this set.
         // When a collectibleItem is added to the set, its ID gets appended here.
         // The ID does not get removed from this array when a CollectibleItem is retired.
-        pub var collectibleItems: [UInt32]
+        access(contract) var collectibleItems: [UInt32]
 
         // Map of CollectibleItem IDs that Indicates if a CollectibleItem in this Set can be minted.
         // When a CollectibleItem is added to a Set, it is mapped to false (not retired).
         // When a CollectibleItem is retired, this is set to true and cannot be changed.
-        pub var retired: {UInt32: Bool}
+        access(contract) var retired: {UInt32: Bool}
 
         // Indicates if the Set is currently locked.
         // When a Set is created, it is unlocked 
@@ -267,7 +267,7 @@ pub contract KOTD: NonFungibleToken {
         // that have been minted for specific CollectibleItems in this Set.
         // When a Collectible is minted, this value is stored in the Collectible to
         // show its place in the Set, eg. 13 of 60.
-        pub var numberMintedPerCollectibleItem: {UInt32: UInt32}
+        access(contract) var numberMintedPerCollectibleItem: {UInt32: UInt32}
 
         init(name: String, setIdentityURL: String?, description: String?) {
             pre {
@@ -416,6 +416,8 @@ pub contract KOTD: NonFungibleToken {
 
             return <-newCollection
         }
+
+
     }
 
     pub struct CollectibleData {

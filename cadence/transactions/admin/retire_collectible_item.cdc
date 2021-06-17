@@ -32,7 +32,7 @@ transaction(setID: UInt32, collectibleItemID: UInt32) {
 
     post {
         
-        self.adminRef.borrowSet(setID: setID).retired[collectibleItemID]!: 
+        KOTD.SetData(setID: setID).retired[collectibleItemID]!: 
             "collectible item is not retired"
     }
 }
