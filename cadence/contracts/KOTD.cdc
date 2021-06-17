@@ -872,9 +872,9 @@ pub contract KOTD: NonFungibleToken {
 
         // initialize paths
         // Set our named paths
-        self.CollectionStoragePath = /storage/NiftoryCollectibleCollection
-        self.CollectionPublicPath = /public/NiftoryCollectibleCollection
-        self.AdminStoragePath = /storage/KOTDAdmin004
+        self.CollectionStoragePath = /storage/NiftoryCollectibleCollection001
+        self.CollectionPublicPath = /public/NiftoryCollectibleCollection001
+        self.AdminStoragePath = /storage/KOTDAdmin005
 
         // Put a new Collection in storage 
         self.account.save<@Collection>(<- create Collection(), to: self.CollectionStoragePath)
