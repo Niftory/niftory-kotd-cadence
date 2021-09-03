@@ -9,7 +9,7 @@ import KOTD from "../../contracts/KOTD.cdc"
 
 transaction(metaDataTitle: String, featuredArtists: [String]) {
 
-    // Local variable for the topshot Admin object
+    // Local variable for the KOTD Admin object
     let adminRef: &KOTD.Admin
     let currCollectibleItemID: UInt32
     let metadata: {String: String}
