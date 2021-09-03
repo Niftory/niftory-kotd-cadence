@@ -194,6 +194,7 @@ test("Mint a collectible", async () => {
     }
 });
 
+
 test("Get collection", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_collection = await getScriptCode({name: "get_collection", addressMap}) 
@@ -204,6 +205,7 @@ test("Get collection", async () => {
 
     try {
         const res = await executeScript({ code: get_collection, args, signers });
+        console.log(res)
         expect(res.length).toBeGreaterThan(0)
 
     } catch (e) {
@@ -231,6 +233,25 @@ test("Mint collectibles in bulk", async () => {
                     + ", Set ID: " + txResult.events[i].data.setID + "}")
             }
         }
+    } catch (e) {
+        //console.log(e);
+        expect(e).not.toBeDefined()
+    }
+});
+
+test("Get entity from collectible id, serial number", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_entity = await getScriptCode({name: "get_entity", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[config["0xAdmin"], Address], [collectibleItemId, UInt32], [1, UInt32]]
+
+    expect.assertions(1);
+
+    try {
+        const res = await executeScript({ code: get_entity, args, signers });
+        expect(res.collectibleItemID).toEqual(collectibleItemId)
+        console.log(res)
+
     } catch (e) {
         //console.log(e);
         expect(e).not.toBeDefined()
@@ -561,5 +582,25 @@ test("Fail to mint collectible 3 from the retired set", async () => {
     } catch (e) {
         //console.log(e);
         expect(e).toMatch("Cannot mint the collectibleItem from this collectibleItem: This collectibleItem has been retired.")
+    }
+});
+
+
+test("Get collection end", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_collection = await getScriptCode({name: "get_collection", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[config["0xAdmin"], Address]]
+
+    //expect.assertions(1);
+
+    try {
+        const res = await executeScript({ code: get_collection, args, signers });
+        console.log(res)
+        expect(res.length).toEqual(0)
+
+    } catch (e) {
+        //console.log(e);
+        expect(e).not.toBeDefined()
     }
 });
