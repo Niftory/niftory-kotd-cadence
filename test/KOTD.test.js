@@ -24,6 +24,8 @@ test("Create set", async () => {
     const args = [[setName, FlowString], ["New Set URL", Optional(String)], ["Set Description Lorem Ipsum.", Optional(String)]]
     expect.assertions(1);
 
+    console.log(setId)
+
     try {
         const txResult = await sendTransaction({ code: create_set, args, signers });
         setId = txResult.events[0].data.setID
@@ -108,8 +110,11 @@ test("Get collectible item metadata", async () => {
     const args = [[collectibleItemId, UInt32]]
     expect.assertions(1);
 
+
     try {
         const res = await executeScript({ code: get_collectible_item_metadata, args, signers });
+        console.log(res)
+
         expect(res.title).toEqual(collectibleTitle)
     } catch (e) {
         //console.log(e);
@@ -162,7 +167,7 @@ test("Get collectible items in a set", async () => {
         const res = await executeScript({ code: get_collectible_items_in_set, args, signers });
         expect(res[0]).toEqual(collectibleItemId)
     } catch (e) {
-        //console.log(e);
+        console.log(e);
         expect(e).not.toBeDefined()
     }
 });
@@ -183,6 +188,24 @@ test("Mint a collectible", async () => {
             + ", Set ID: " + txResult.events[0].data.setID + "}")        
         
         collectibleId = txResult.events[0].data.collectibleID
+    } catch (e) {
+        console.log(e);
+        expect(e).not.toBeDefined()
+    }
+});
+
+test("Get collection", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_collection = await getScriptCode({name: "get_collection", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[config["0xAdmin"], Address]]
+
+    //expect.assertions(1);
+
+    try {
+        const res = await executeScript({ code: get_collection, args, signers });
+        expect(res.length).toBeGreaterThan(0)
+
     } catch (e) {
         //console.log(e);
         expect(e).not.toBeDefined()
@@ -214,6 +237,25 @@ test("Mint collectibles in bulk", async () => {
     }
 });
 
+test("Get entities from collectible id", async () => {
+    const addressMap = {KOTD: config["0xAdmin"]};
+    const get_entities = await getScriptCode({name: "get_entities", addressMap}) 
+    const signers = [config["0xAdmin"]]
+    const args = [[config["0xAdmin"], Address], [collectibleItemId, UInt32]]
+
+    expect.assertions(1);
+
+    try {
+        const res = await executeScript({ code: get_entities, args, signers });
+        console.log(res)
+        expect(res.length).toBeGreaterThan(0)
+
+    } catch (e) {
+        //console.log(e);
+        expect(e).not.toBeDefined()
+    }
+});
+
 test("Get number of collectibles in an edition", async () => {
     const addressMap = {KOTD: config["0xAdmin"]};
     const get_edition_size = await getScriptCode({name: "get_edition_size", addressMap})
@@ -230,6 +272,7 @@ test("Get number of collectibles in an edition", async () => {
         expect(e).not.toBeDefined()
     }
 });
+
 
 test("Create recipient account", async () => {
     recipientAddress = await getAccountAddress("Alice");

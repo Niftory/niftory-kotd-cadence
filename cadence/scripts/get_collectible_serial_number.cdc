@@ -14,7 +14,7 @@ import KOTD from "../contracts/KOTD.cdc"
 
 pub fun main(account: Address, id: UInt64): UInt32 {
 
-    let collectionRef = getAccount(account).getCapability(/public/NiftoryCollectibleCollection)
+    let collectionRef = getAccount(account).getCapability(KOTD.CollectionPublicPath)
         .borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()
         ?? panic("Could not get public Collectible collection reference")
 

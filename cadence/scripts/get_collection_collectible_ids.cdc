@@ -16,7 +16,7 @@ pub fun main(account: Address): [UInt64] {
 
     let acct = getAccount(account)
 
-    let collectionRef = acct.getCapability(/public/NiftoryCollectibleCollection)
+    let collectionRef = acct.getCapability(KOTD.CollectionPublicPath)
                             .borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()!
 
     log(collectionRef.getIDs())
