@@ -12,14 +12,24 @@ import KOTD from "../contracts/KOTD.cdc"
 // Returns: [KOTD.NFT]
 // list of all NFTs an account owns
 
-pub fun main(account: Address, collectibleID: UInt32): [KOTD.CollectibleData] {
+pub struct CollectibleReturn {
+    pub var data : KOTD.CollectibleData
+    pub var id : UInt64
+
+    init(data: KOTD.CollectibleData, id: UInt64) {
+        self.data = data;
+        self.id = id;
+    }
+}
+
+pub fun main(account: Address, collectibleID: UInt32): [CollectibleReturn] {
 
     let acct = getAccount(account)
 
     let collectionRef = acct.getCapability(KOTD.CollectionPublicPath)
         .borrow<&{KOTD.NiftoryCollectibleCollectionPublic}>()!
 
-    var entities: [KOTD.CollectibleData] = []
+    var entities: [CollectibleReturn] = []
 
     for id in collectionRef.getIDs() {
 
@@ -30,7 +40,8 @@ pub fun main(account: Address, collectibleID: UInt32): [KOTD.CollectibleData] {
         let data = token.data
 
         if (collectibleID == data.collectibleItemID){
-            entities.append(data)
+            let toAppend = CollectibleReturn(data: data, id: token.id)
+            entities.append(toAppend)
         }
     }
 
